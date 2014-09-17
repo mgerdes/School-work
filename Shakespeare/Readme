@@ -1,0 +1,9 @@
+This program parses very large text files and stores each unique word. 
+The program takes a text file as input, then interpretes words as a sequence of characters without anything other than
+the alpha numeric characters. The program then uses a hash function to assign a word an integer, then 
+this integer points to which binary tree to go look for the word in. If there is no word found then it creates
+a node in that tree, if there is one found then the count for that word is increased, but no new node is made.
+
+Without the hash function the program ran in about 1.6 - 1.7 seconds. With the has function it was about 1.3 - 1.4 seconds.
+
+The text file I used was War and Peace by Tolstoy.
