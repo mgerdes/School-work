@@ -110,6 +110,9 @@ class HashTable {
 
 	int hashValue(String word) {
 
+		// This hash function was create dby Clifford A. Shaffer.
+		// More info here : http://research.cs.vt.edu/AVresearch/hashing/strings.php
+
 		int intLength = word.length() / 4;
 		long sum = 0;
 		for (int j = 0; j < intLength; j++) {
@@ -129,6 +132,7 @@ class HashTable {
 		}
 
 		return(Math.abs((int)sum) % size);
+
 	}
 
 	void addValue(String word) {
