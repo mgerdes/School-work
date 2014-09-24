@@ -19,7 +19,6 @@ public class StackTest {
 		stack1.push("WEREEERE");
 
 		System.out.println(stack1.pop());
-
 	}
 }
 

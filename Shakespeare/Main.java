@@ -179,18 +179,18 @@ public class Main {
 
 		Scanner input = new Scanner(System.in);
 
-		HashTable table = new HashTable(20000);
+		HashTable table = new HashTable(5000);
 		BinaryTree tree = new BinaryTree("the");
 
 		int totalWords = 0;
 
 		while (input.hasNext()) {
-			tree.addValue(input.next().replaceAll("[^a-zA-Z0-9]", ""));
+			table.addValue(input.next().replaceAll("[^a-zA-Z0-9]", ""));
 			totalWords++;
 		}
 
 		System.out.println(totalWords);
-		//System.out.println(table.uniqueWords());
+		System.out.println(table.uniqueWords());
 
 	}
 
