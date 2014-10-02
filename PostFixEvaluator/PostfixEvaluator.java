@@ -1,5 +1,19 @@
-import stack.Stack;
+import stack.*;
 import java.util.Scanner;
+
+@SuppressWarnings("serial")
+class UnknownOperatorException extends Exception
+{
+	public UnknownOperatorException()
+	{
+		super();
+	}
+
+	public UnknownOperatorException(String message)
+	{
+		super(message);
+	}
+}
 
 class TestCase
 {
@@ -15,14 +29,17 @@ class TestCase
 
 public class PostfixEvaluator
 {
-	public static char operators[] = {'>', '<', '-', '+', '%', '/', '*', 'C', 'Q', '^'};
+	public static char operators[] = {'>', '<', '-', '+', '%', '/', '*', '^', 'Q', 'C'};
 
 	public static char unaryOperators[] = {'C', 'Q'};
 	public static char binaryOperators[] = {'>', '<', '-', '+', '%', '/', '*', '^'};
 
 	public static void main(String[] args)
 	{
-		runTestCases();
+		runTestCases(10000);
+		//	getInputFromConsole();
+		String[] expression = createExpression(0, 10);
+		System.out.println(expression[0] + " = " + expression[1]);
 	}
 
 	public static void getInputFromConsole()
@@ -32,125 +49,151 @@ public class PostfixEvaluator
 		String infixExpression;
 		while (!(infixExpression = input.nextLine()).equals("exit"))
 		{
-			String postfixExpression = convertToPostfix(infixExpression);
-			int result = evaluatePostfixExpression(postfixExpression);
-
-			//	System.out.printf("\nThe infix expression: \n\t %s\nwas converted to " +
-			//	                  "the postfix expression: \n\t %s\nwhich evaluated to " +
-			//	                  "%d.\n\n", infixExpression, postfixExpression, result);
-
-			System.out.println(result);
-		}
-	}
-
-	public static void runTestCases()
-	{
-		boolean testCaseFailed = false;
-		generateTestCases();
-
-		TestCase testcases[] =
-		{
-			new TestCase("( 2 + 5 ) * ( 4 % 2 )", 0),
-			new TestCase("(2+3)*(4%2)", 0),
-			new TestCase("Q((4*4))", 4),
-			new TestCase("C(27)", 3),
-			new TestCase("(0-1)*(2<10)", -2048),
-			new TestCase("(0 - 1) * (2 < 10)", -2048),
-			new TestCase("2<10", 2048),
-			new TestCase("15>1", 7),
-			new TestCase("7%2", 1),
-			new TestCase("15 % 5", 0),
-			new TestCase("17 % 5", 2),
-			new TestCase("3 < 2", 12),
-			new TestCase("3 ^ 4", 81),
-			new TestCase("Q(11)", 3),
-			new TestCase("Q(9)", 3),
-			new TestCase("Q(9) * Q(11)", 9),
-		};
-
-		for (TestCase testcase : testcases)
-		{
-			int result = evaluatePostfixExpression(convertToPostfix(testcase.infixExpression));
-			if (result != testcase.expectedResult)
+			try
 			{
-				System.out.printf("%s evaluated to %d not the expected value of %d.\n",
-				                  testcase.infixExpression, result, testcase.expectedResult);
-				testCaseFailed = true;
+				String postfixExpression = convertToPostfix(infixExpression);
+				int result = evaluatePostfixExpression(postfixExpression);
+
+				//	System.out.printf("\nThe infix expression: \n\t %s\nwas converted to " +
+				//	                  "the postfix expression: \n\t %s\nwhich evaluated to " +
+				//	                  "%d.\n\n", infixExpression, postfixExpression, result);
+
+				System.out.println(result);
+			}
+			catch (UnknownOperatorException e)
+			{
+				System.out.println(e.getMessage());
 			}
 		}
-
-		if (!testCaseFailed)
-		{
-			System.out.println("All test cases passed :).");
-		}
-		else
-		{
-			System.out.println("Some test cases failed :(.");
-		}
 	}
 
-	public static void generateTestCases()
+	public static void runTestCases(int numberOfTestCases)
 	{
-
-		int numberOfOperations = (int)(Math.random() * 20);
-		numberOfOperations = 1;
-
-		for (int i = 0; i < numberOfOperations; i++)
+		try
 		{
-			String expression;
-			char operator = operators[(int)(Math.random() * operators.length)];
-			int operand1 = 0, operand2 = 0;
+			boolean testCaseFailed = false;
+			TestCase testcases[] = new TestCase[numberOfTestCases];
 
-			operand1 = (int)(Math.random() * 100);
-			if (isBinaryOperator(operator))
+			for (int i = 0; i < numberOfTestCases; i++)
 			{
-				operand2 = (int)(Math.random() * 100);
-				expression = operand1 + " " + operator + " " + operand2;
+				String[] expression = createExpression(0, 5);
+				testcases[i] = new TestCase(expression[0], Integer.valueOf(expression[1]));
+			}
+
+			for (TestCase testcase : testcases)
+			{
+				int result = evaluatePostfixExpression(convertToPostfix(testcase.infixExpression));
+				if (result != testcase.expectedResult)
+				{
+					System.out.printf("%s evaluated to %d not the expected value of %d.\n",
+					                  testcase.infixExpression, result, testcase.expectedResult);
+					testCaseFailed = true;
+				}
+			}
+
+			if (!testCaseFailed)
+			{
+				System.out.println("All test cases passed :).");
 			}
 			else
 			{
-				expression = operator + "(" + operand1 + ")";
+				System.out.println("Some test cases failed :(.");
 			}
+		}
+		catch (UnknownOperatorException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-			int result = 0;
+	public static String[] createExpression(int depth, int maxDepth)
+	{
+		if (depth >= maxDepth)
+		{
+			int randomNumber = (int)(Math.random() * 10) + 1;
+			return new String[] {("" + randomNumber), "" + randomNumber};
+		}
+		else
+		{
+			char operator = randomOperator();
 
-			switch (operator)
+			String[] expression1 = createExpression(depth + 1, maxDepth);
+			int operand1 = Integer.valueOf(expression1[1]);
+
+			if (isBinaryOperator(operator))
 			{
-			case '<':
-				result = operand1 << operand2;
-				break;
-			case '>':
-				result = operand1 >> operand2;
-				break;
-			case '*':
-				result = operand1 * operand2;
-				break;
-			case '/':
-				result = operand1 / operand2;
-				break;
-			case '%':
-				result = operand1 % operand2;
-				break;
-			case '+':
-				result = operand1 + operand2;
-				break;
-			case '-':
-				result = operand1 - operand2;
-				break;
-			case 'C':
-				result = (int)Math.pow(operand1, 1D/3);
-				break;
-			case 'Q':
-				result = (int)Math.pow(operand1, 1D/2);
-				break;
-			case '^':
-				result = (int)Math.pow(operand1, operand2);
-				break;
-			}
+				String[] expression2 = createExpression(depth + 1, maxDepth);
+				int operand2 = Integer.valueOf(expression2[1]);
 
-			System.out.println(expression + " = " + result);
+				while (operand2 == 0 && (operator == '/' || operator == '%'))
+				{
+					expression2 = createExpression(depth + 1, maxDepth);
+					operand2 = Integer.valueOf(expression2[1]);
+				}
+
+				int result = evaluate(operand1, operand2, operator);
+
+				return new String[] {"(" + expression1[0] + operator + expression2[0] + ")", "" + result};
+			}
+			else
+			{
+				while (operand1 < 0 && (operator == 'Q'))
+				{
+					expression1 = createExpression(depth + 1, maxDepth);
+					operand1 = Integer.valueOf(expression1[1]);
+				}
+
+				int result = evaluate(operand1, 0, operator);
+
+				return new String[] {operator + "(" + expression1[0] + ")", "" + result};
+			}
+		}
+	}
+
+	public static int evaluate(int operand1, int operand2, char operator)
+	{
+		int result = 0;
+
+		switch(operator)
+		{
+		case('+'):
+			result = operand1 + operand2;
+			break;
+		case('-'):
+			result = operand1 - operand2;
+			break;
+		case('*'):
+			result = operand1 * operand2;
+			break;
+		case('/'):
+			result = operand1 / operand2;
+			break;
+		case('^'):
+			result = (int)Math.pow(operand1, operand2);
+			break;
+		case('<'):
+			result = operand1 << operand2;
+			break;
+		case('>'):
+			result = operand1 >> operand2;
+			break;
+		case('%'):
+			result = operand1 % operand2;
+			break;
+		case('C'):
+			result = (int)Math.pow(operand1, 1D/3);
+			break;
+		case('Q'):
+			result = (int)Math.pow(operand1, 1D/2);
+			break;
 		}
 
+		return result;
+	}
+
+	public static char randomOperator()
+	{
+		return operators[(int)(Math.random() * operators.length)];
 	}
 
 	public static int evaluatePostfixExpression(String postfixExpression)
@@ -225,7 +268,7 @@ public class PostfixEvaluator
 		return result;
 	}
 
-	public static String convertToPostfix(String infixString)
+	public static String convertToPostfix(String infixString) throws UnknownOperatorException
 	{
 		Stack<Character> stack = new Stack<Character>();
 
@@ -234,7 +277,6 @@ public class PostfixEvaluator
 
 		for (int i = 0; i < infixCharArray.length; i++)
 		{
-
 			char curChar = infixCharArray[i];
 
 			if (isOperator(curChar))
@@ -269,7 +311,7 @@ public class PostfixEvaluator
 			}
 			else
 			{
-				// throws unknown input exception.
+				throw new UnknownOperatorException("The character " + curChar + " is not known.");
 			}
 		}
 
