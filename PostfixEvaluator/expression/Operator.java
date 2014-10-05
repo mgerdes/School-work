@@ -53,49 +53,51 @@ public class Operator
 	{
 		BigInteger resultBig;
 		BigInteger operand1Big = new BigInteger("" + operand1);
-		BigInteger operand2Big = new BigInteger("" + operand2); 
+		BigInteger operand2Big = new BigInteger("" + operand2);
 
 		switch(operator)
 		{
-			case('+'):
-				resultBig = operand1Big.add(operand2Big);
-				break;
-			case('-'):
-				resultBig = operand1Big.subtract(operand2Big);
-				break;
-			case('*'):
-				resultBig = operand1Big.multiply(operand2Big);
-				break;
-			case('/'):
-				resultBig = operand1Big.divide(operand2Big);
-				break;
-			case('^'):
-				resultBig = operand1Big.pow(operand2);
-				break;
-			case('<'):
-				resultBig = operand1Big.shiftLeft(operand2);
-				break;
-			case('>'):
-				resultBig = operand1Big.shiftRight(operand2);
-				break;
-			case('%'):
-				resultBig = operand1Big.mod(operand2Big);
-				break;
-			case('C'):
-				resultBig = new BigInteger("" + (int)Math.pow(operand1, 1D/3));
-				break;
-			case('Q'):
-				resultBig = new BigInteger("" + (int)Math.pow(operand1, 1D/2));
-				break;
-			default:
-				resultBig = new BigInteger("" + 0);
-				break;
+		case('+'):
+			resultBig = operand1Big.add(operand2Big);
+			break;
+		case('-'):
+			resultBig = operand1Big.subtract(operand2Big);
+			break;
+		case('*'):
+			resultBig = operand1Big.multiply(operand2Big);
+			break;
+		case('/'):
+			resultBig = operand1Big.divide(operand2Big);
+			break;
+		case('^'):
+			resultBig = operand1Big.pow(operand2);
+			break;
+		case('<'):
+			resultBig = operand1Big.shiftLeft(operand2);
+			break;
+		case('>'):
+			resultBig = operand1Big.shiftRight(operand2);
+			break;
+		case('%'):
+			resultBig = operand1Big.mod(operand2Big);
+			break;
+		case('C'):
+			resultBig = new BigInteger("" + (int)Math.pow(operand1, 1D/3));
+			break;
+		case('Q'):
+			resultBig = new BigInteger("" + (int)Math.pow(operand1, 1D/2));
+			break;
+		default:
+			resultBig = new BigInteger("" + 0);
+			break;
 		}
 
-		if (resultBig.compareTo(new BigInteger("" + Integer.MAX_VALUE)) == 1) {
+		if (resultBig.compareTo(new BigInteger("" + Integer.MAX_VALUE)) == 1)
+		{
 			throw new ArithmeticException("There was overflow in the previous calculation.");
 		}
-		if (resultBig.compareTo(new BigInteger("" + Integer.MIN_VALUE)) == -1) {
+		if (resultBig.compareTo(new BigInteger("" + Integer.MIN_VALUE)) == -1)
+		{
 			throw new ArithmeticException("There was underflow in the previous calculation.");
 		}
 
