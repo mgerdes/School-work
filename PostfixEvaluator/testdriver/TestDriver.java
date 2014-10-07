@@ -1,25 +1,34 @@
 package testdriver;
-
 import expression.*;
+
+import java.math.BigInteger;
 
 public class TestDriver
 {
 
-	public static void runTestCases(int numberOfTestCases)
+	private static final int MAX_DEPTH = 3, MAX_NUMBER = 10;
+
+	private TestCase testCases[];
+	private int numOfTestCases;
+
+	public TestDriver(int numOfTestCases)
+	{
+		this.numOfTestCases = numOfTestCases;
+		testCases = new TestCase[numOfTestCases];
+		this.createExpressions();
+	}
+
+	public void runTestCases()
 	{
 		boolean testCaseFailed = false;
-		TestCase testcases[] = new TestCase[numberOfTestCases];
 
-		for (int i = 0; i < numberOfTestCases; i++)
-		{
-			String[] expression = createExpression(0, 5);
-			testcases[i] = new TestCase(expression[0], Integer.valueOf(expression[1]));
-		}
-
-		for (TestCase testcase : testcases)
+		for (TestCase testcase : testCases)
 		{
 			InfixExpression infix = new InfixExpression(testcase.getExpression());
 			PostfixExpression postfix = infix.convertToPostfix();
+			//System.out.println(testcase.getExpression());
+			//System.out.println(postfix);
+			//System.out.println(testcase.getExpectedResult());
 
 			int result = postfix.evaluate();
 
@@ -41,32 +50,57 @@ public class TestDriver
 		}
 	}
 
-	public static String[] createExpression(int depth, int maxDepth)
+	private void createExpressions()
 	{
-		if (depth >= maxDepth)
+		for (int i = 0; i < numOfTestCases; i++)
 		{
-			int randomNumber = (int)(Math.random() * 10) + 1;
+			try
+			{
+				String[] expression = createExpression();
+
+				InfixExpression infix = new InfixExpression(expression[0]);
+				int result = Integer.valueOf(expression[1]);
+
+				testCases[i] = new TestCase(infix, result);
+			}
+			catch (ArithmeticException e)
+			{
+				i--;
+			}
+		}
+	}
+
+	public static String[] createExpression() throws ArithmeticException
+	{
+		return createExpression(0);
+	}
+
+	private static String[] createExpression(int depth) throws ArithmeticException
+	{
+		if (depth >= MAX_DEPTH)
+		{
+			int randomNumber = (int)(Math.random() * MAX_NUMBER) + 1;
 			return new String[] {("" + randomNumber), "" + randomNumber};
 		}
 		else
 		{
 			char operator = Operator.randomOperator();
 
-			String[] expression1 = createExpression(depth + 1, maxDepth);
+			String[] expression1 = createExpression(depth + 1);
 			int operand1 = Integer.valueOf(expression1[1]);
 
 			if (Operator.isBinaryOperator(operator))
 			{
-				String[] expression2 = createExpression(depth + 1, maxDepth);
+				String[] expression2 = createExpression(depth + 1);
 				int operand2 = Integer.valueOf(expression2[1]);
 
 				while (operand2 == 0 && (operator == '/' || operator == '%'))
 				{
-					expression2 = createExpression(depth + 1, maxDepth);
+					expression2 = createExpression(depth + 1);
 					operand2 = Integer.valueOf(expression2[1]);
 				}
 
-				int result = Operator.evaluate(operand1, operand2, operator);
+				int result = evaluate(operand1, operand2, operator);
 
 				return new String[] {"(" + expression1[0] + operator + expression2[0] + ")", "" + result};
 			}
@@ -74,14 +108,68 @@ public class TestDriver
 			{
 				while (operand1 < 0 && (operator == 'Q'))
 				{
-					expression1 = createExpression(depth + 1, maxDepth);
+					expression1 = createExpression(depth + 1);
 					operand1 = Integer.valueOf(expression1[1]);
 				}
 
-				int result = Operator.evaluate(operand1, 0, operator);
+				int result = evaluate(operand1, 0, operator);
 
 				return new String[] {operator + "(" + expression1[0] + ")", "" + result};
 			}
 		}
+	}
+
+	private static int evaluate(int operand1, int operand2, char operator) throws ArithmeticException
+	{
+		long result;
+
+		switch(operator)
+		{
+		case('+'):
+			result = (long)operand1 + (long)operand2;
+			break;
+		case('-'):
+			result = (long)operand1 - (long)operand2;
+			break;
+		case('*'):
+			result = (long)operand1 * (long)operand2;
+			break;
+		case('/'):
+			result = (long)operand1 / (long)operand2;
+			break;
+		case('^'):
+			result = (long)Math.pow((long)operand1, (long)operand2);
+			break;
+		case('<'):
+			result = (long)operand1 << (long)operand2;
+			break;
+		case('>'):
+			result = (long)operand1 >> (long)operand2;
+			break;
+		case('%'):
+			result = (long)operand1 % (long)operand2;
+			break;
+		case('C'):
+			result = (long)Math.pow((long)operand1, 1D/3);
+			break;
+		case('Q'):
+			result = (long)Math.pow((long)operand1, 1D/2);
+			break;
+		default:
+			result = 0;
+			break;
+		}
+
+
+		if (result > Integer.MAX_VALUE)
+		{
+			throw new ArithmeticException("overflow");
+		}
+		if (result < Integer.MIN_VALUE)
+		{
+			throw new ArithmeticException("underflow");
+		}
+
+		return (int)result;
 	}
 }

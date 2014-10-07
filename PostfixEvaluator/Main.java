@@ -9,10 +9,19 @@ public class Main
 
 	public static void main(String[] args)
 	{
-		//runTestCases(10000);
-		getInputFromConsole();
-		//String[] expression = createExpression(0, 10);
-		//System.out.println(expression[0] + " = " + expression[1]);
+		try
+		{
+			TestDriver testing = new TestDriver(10000);
+			testing.runTestCases();
+
+			//runTestCases(10000);
+			//getInputFromConsole();
+			//String[] expression = createExpression(0, 10);
+		}
+		catch (ArithmeticException e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 
 	public static void getInputFromConsole()
@@ -29,15 +38,7 @@ public class Main
 			PostfixExpression postfix = infix.convertToPostfix();
 
 			System.out.println(postfix);
-
-			try
-			{
-				System.out.println(postfix.evaluate());
-			}
-			catch (ArithmeticException e)
-			{
-				System.out.println(e.getMessage());
-			}
+			System.out.println(postfix.evaluate());
 		}
 	}
 

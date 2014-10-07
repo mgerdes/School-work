@@ -4,21 +4,286 @@ import java.math.*;
 
 public class Operator
 {
-
-	private static final char OPERATORS[] = {'>', '<', '-', '+', '%', '/', '*', '^', 'Q', 'C'};
-
-	private char operator;
-
-	public Operator(char operator)
+	private static OperatorInterface operators[] =
 	{
-		this.operator = operator;
+		new OperatorInterface()
+		{
+			public char getCharacter()
+			{
+				return '+';
+			}
+
+			public int getPrecedence()
+			{
+				return 1;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)operand1 + (long)operand2;
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return true;
+			}
+		},
+
+		new OperatorInterface()
+		{
+			public char getCharacter()
+			{
+				return '-';
+			}
+
+			public int getPrecedence()
+			{
+				return 1;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)operand1 - (long)operand2;
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return true;
+			}
+		},
+
+		new OperatorInterface()
+		{
+
+			public char getCharacter()
+			{
+				return '/';
+			}
+
+			public int getPrecedence()
+			{
+				return 2;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)operand1 / (long)operand2;
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return true;
+			}
+
+		},
+
+		new OperatorInterface()
+		{
+			public char getCharacter()
+			{
+				return '*';
+			}
+
+			public int getPrecedence()
+			{
+				return 2;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)operand1 * (long)operand2;
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return true;
+			}
+		},
+
+		new OperatorInterface()
+		{
+			public char getCharacter()
+			{
+				return '%';
+			}
+
+			public int getPrecedence()
+			{
+				return 2;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)operand1 % (long)operand2;
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return true;
+			}
+		},
+
+		new OperatorInterface()
+		{
+			public char getCharacter()
+			{
+				return '>';
+			}
+
+			public int getPrecedence()
+			{
+				return 2;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)operand1 >> (long)operand2;
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return true;
+			}
+		},
+
+		new OperatorInterface()
+		{
+			public char getCharacter()
+			{
+				return '<';
+			}
+
+			public int getPrecedence()
+			{
+				return 2;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)operand1 << (long)operand2;
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return true;
+			}
+		},
+
+		new OperatorInterface()
+		{
+			public char getCharacter()
+			{
+				return '^';
+			}
+
+			public int getPrecedence()
+			{
+				return 2;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)Math.pow((long)operand1, (long)operand2);
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return true;
+			}
+
+		},
+
+		new OperatorInterface()
+		{
+			public char getCharacter()
+			{
+				return 'Q';
+			}
+
+			public int getPrecedence()
+			{
+				return 3;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)Math.pow((long)operand1, 1D/2);
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return false;
+			}
+		},
+
+		new OperatorInterface()
+		{
+
+			public char getCharacter()
+			{
+				return 'C';
+			}
+
+			public int getPrecedence()
+			{
+				return 3;
+			}
+
+			public long evaluate(int operand1, int operand2)
+			{
+				long result = (long)Math.pow((long)operand1, 1D/3);
+				return result;
+			}
+
+			public boolean isBinaryOperator()
+			{
+				return false;
+			}
+		},
+	};
+
+	public static boolean isIntegerOverflow(long number)
+	{
+		if (number > Integer.MAX_VALUE)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static boolean isIntegerUnderflow(long number)
+	{
+		if (number < Integer.MIN_VALUE)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
 	}
 
 	public static int precendence(char operator)
 	{
-		for (int i = 0; i < OPERATORS.length; i++)
+		for (OperatorInterface curOperator : operators)
 		{
-			if (operator == OPERATORS[i]) return i;
+			if (curOperator.getCharacter() == operator)
+			{
+				return curOperator.getPrecedence();
+			}
 		}
 
 		return -1;
@@ -26,82 +291,53 @@ public class Operator
 
 	public static boolean isOperator(char character)
 	{
-		for (char operator : OPERATORS)
+		for (OperatorInterface operator : operators)
 		{
-			if (character == operator) return true;
+			if (operator.getCharacter() == character) return true;
 		}
 		return false;
 	}
 
 	public static boolean isUnaryOperator(char operator)
 	{
-		if (operator == 'C' || operator == 'Q') return true;
-		else return false;
+		return !isBinaryOperator(operator);
 	}
 
 	public static boolean isBinaryOperator(char operator)
 	{
-		return !isUnaryOperator(operator);
+		for (OperatorInterface curOperator: operators)
+		{
+			if (curOperator.getCharacter() == operator)
+			{
+				if (curOperator.isBinaryOperator()) return true;
+				else return false;
+			}
+		}
+		return false;
 	}
 
 	public static char randomOperator()
 	{
-		return OPERATORS[(int)(Math.random() * OPERATORS.length)];
+		return operators[(int)(Math.random() * operators.length)].getCharacter();
 	}
 
 	public static int evaluate(int operand1, int operand2, char operator) throws ArithmeticException
 	{
-		BigInteger resultBig;
-		BigInteger operand1Big = new BigInteger("" + operand1);
-		BigInteger operand2Big = new BigInteger("" + operand2);
-
-		switch(operator)
+		for (OperatorInterface curOperator : operators)
 		{
-		case('+'):
-			resultBig = operand1Big.add(operand2Big);
-			break;
-		case('-'):
-			resultBig = operand1Big.subtract(operand2Big);
-			break;
-		case('*'):
-			resultBig = operand1Big.multiply(operand2Big);
-			break;
-		case('/'):
-			resultBig = operand1Big.divide(operand2Big);
-			break;
-		case('^'):
-			resultBig = operand1Big.pow(operand2);
-			break;
-		case('<'):
-			resultBig = operand1Big.shiftLeft(operand2);
-			break;
-		case('>'):
-			resultBig = operand1Big.shiftRight(operand2);
-			break;
-		case('%'):
-			resultBig = operand1Big.mod(operand2Big);
-			break;
-		case('C'):
-			resultBig = new BigInteger("" + (int)Math.pow(operand1, 1D/3));
-			break;
-		case('Q'):
-			resultBig = new BigInteger("" + (int)Math.pow(operand1, 1D/2));
-			break;
-		default:
-			resultBig = new BigInteger("" + 0);
-			break;
+			if (curOperator.getCharacter() == operator)
+			{
+				long result = curOperator.evaluate(operand1, operand2);
+
+				if (isIntegerOverflow(result))
+					throw new ArithmeticException("Overflow");
+				if (isIntegerUnderflow(result))
+					throw new ArithmeticException("Underflow");
+
+				return ((int)result);
+			}
 		}
 
-		if (resultBig.compareTo(new BigInteger("" + Integer.MAX_VALUE)) == 1)
-		{
-			throw new ArithmeticException("There was overflow in the previous calculation.");
-		}
-		if (resultBig.compareTo(new BigInteger("" + Integer.MIN_VALUE)) == -1)
-		{
-			throw new ArithmeticException("There was underflow in the previous calculation.");
-		}
-
-		return resultBig.intValue();
+		return 0;
 	}
-
 }

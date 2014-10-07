@@ -1,24 +1,21 @@
 package testdriver;
 
+import expression.*;
+
 public class TestCase
 {
-	private String infixExpression;
+	private InfixExpression infix;
 	private int expectedResult;
 
-	public TestCase()
+	public TestCase(InfixExpression infix, int expectedResult)
 	{
-
-	}
-
-	public TestCase(String infixExpression, int expectedResult)
-	{
-		this.infixExpression = infixExpression;
+		this.infix = infix;
 		this.expectedResult = expectedResult;
 	}
 
 	public String getExpression()
 	{
-		return this.infixExpression;
+		return this.infix.toString();
 	}
 
 	public int getExpectedResult()

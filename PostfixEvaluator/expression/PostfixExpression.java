@@ -4,7 +4,6 @@ import stack.*;
 
 public class PostfixExpression
 {
-
 	private String expression;
 
 	public PostfixExpression(String expression)
@@ -43,8 +42,8 @@ public class PostfixExpression
 				}
 				else
 				{
-					operand1 = stack.pop();
-					operand2 = 0;
+					operand2 = stack.pop();
+					operand1 = 0;
 				}
 
 				int result = Operator.evaluate(operand2, operand1, operator);
@@ -61,5 +60,4 @@ public class PostfixExpression
 	{
 		return expression;
 	}
-
 }
