@@ -1,8 +1,9 @@
 package Trees;
 
+import WordStorage.WordStorage;
 import Node.*;
 
-public class BinaryTree {
+public class BinaryTree implements WordStorage {
     private int numberOfComparisons;
     private int numberOfReferenceChanges;
     private int wordCount;
@@ -64,6 +65,10 @@ public class BinaryTree {
                            + "Number Of Comparisons: %d.\n"
                            + "Number Of Reference Changes: %d.",wordCount, distinctWordCount 
                                                                ,numberOfComparisons, numberOfReferenceChanges);
+    }
+
+    public String approachName() {
+        return "Binary Tree";
     }
 
     public boolean isEmpty() {

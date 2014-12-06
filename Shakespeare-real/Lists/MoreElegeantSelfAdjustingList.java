@@ -1,8 +1,9 @@
 package Lists;
 
+import WordStorage.WordStorage;
 import Node.*;
 
-public class MoreElegeantSelfAdjustingList {
+public class MoreElegeantSelfAdjustingList implements WordStorage {
     private int numberOfComparisons;
     private int numberOfReferenceChanges;
     private int wordCount;
@@ -71,7 +72,17 @@ public class MoreElegeantSelfAdjustingList {
                                                                ,numberOfComparisons, numberOfReferenceChanges);
     }
 
+    public String approachName() {
+        return "More Elegeant Self-Adjusting List";
+    }
+
     public String toString() {
-        return null;
+        String s = "";
+        Node curNode = front;
+        while (curNode != null) {
+            s += curNode.getWord() + "(" + curNode.getCount() + "), ";
+            curNode = curNode.getLink();
+        }
+        return s;
     }
 }

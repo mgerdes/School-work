@@ -1,8 +1,10 @@
 package Lists;
 
+import WordStorage.WordStorage;
 import Node.*;
 
-public class SortedLinkedList {
+public class SortedLinkedList implements WordStorage {
+    public String approachName = "Sorted List";
     private int numberOfComparisons;
     private int numberOfReferenceChanges;
     private int wordCount;
@@ -84,6 +86,10 @@ public class SortedLinkedList {
                            + "Number Of Comparisons: %d.\n"
                            + "Number Of Reference Changes: %d.",wordCount, distinctWordCount 
                                                                ,numberOfComparisons, numberOfReferenceChanges);
+    }
+
+    public String approachName() {
+        return "Sorted Linked List";
     }
 
     public String toString() {

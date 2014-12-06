@@ -1,8 +1,9 @@
 package Lists;
 
+import WordStorage.WordStorage;
 import Node.*;
 
-public class LinkedList {
+public class LinkedList implements WordStorage {
     private int numberOfComparisons;
     private int numberOfReferenceChanges;
     private int wordCount;
@@ -63,6 +64,14 @@ public class LinkedList {
         }
     }
 
+    public int getDistinctWordCount() {
+        return distinctWordCount;
+    }
+
+    public int getWordCount() {
+        return wordCount;
+    }
+
     public int getNumberOfRefenceChanges() {
         return numberOfReferenceChanges;
     }
@@ -78,6 +87,10 @@ public class LinkedList {
                            + "Number Of Comparisons: %d.\n"
                            + "Number Of Reference Changes: %d.",wordCount, distinctWordCount 
                                                                ,numberOfComparisons, numberOfReferenceChanges);
+    }
+
+    public String approachName() {
+        return "Linked List";
     }
 
     public String toString() {

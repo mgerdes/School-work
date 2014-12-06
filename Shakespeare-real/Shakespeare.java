@@ -2,97 +2,51 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import WordStorage.WordStorage;
 import Node.Node;
 import Lists.LinkedList;
 import Lists.SortedLinkedList;
 import Lists.HeavyHandedSelfAdjustingList;
 import Lists.MoreElegeantSelfAdjustingList;
 import Trees.BinaryTree;
+import HashTable.HashTable;
 
-class Main {
-    static final String FILE_NAME = "Shakespeare.txt";
+public class Shakespeare {
+    static final String FILE_NAME = "Hamlet.txt";
+    static File file = new File(FILE_NAME);
 
     public static void main(String[] args) throws FileNotFoundException {
-        File file = new File(FILE_NAME);
-        Scanner in = new Scanner(file);
-
         // Linked List Approach.
-        Long startTime = System.currentTimeMillis();
-        LinkedList l = new LinkedList();
-        while (in.hasNext()) {
-            String s = format(in.next());
-            if (s.equals("")) {
-                continue;
-            }
-            l.insertWord(s);
-        }
-        System.out.println("Linked List Approach:\n" + l.metrics());
-        double runTime = convertMilliSecondsToSeconds(System.currentTimeMillis() - startTime);
-        System.out.printf("Time: %f seconds.\n\n", runTime);
-
-        in = new Scanner(file);
+        run(new LinkedList());
 
         // Sorted Linked List Approach.
-        startTime = System.currentTimeMillis();
-        SortedLinkedList sl = new SortedLinkedList();
-        while (in.hasNext()) {
-            String s = format(in.next());
-            if (s.equals("")) {
-                continue;
-            }
-            sl.insertWord(s);
-        }
-        System.out.println("Sorted Linked List Approach:\n" + sl.metrics());
-        runTime = convertMilliSecondsToSeconds(System.currentTimeMillis() - startTime);
-        System.out.printf("Time: %f seconds.\n\n", runTime);
-
-        in = new Scanner(file);
+        run(new SortedLinkedList());
 
         // Heavy Handed Self-Adjusting List Approach.
-        startTime = System.currentTimeMillis();
-        HeavyHandedSelfAdjustingList hl = new HeavyHandedSelfAdjustingList();
-        while (in.hasNext()) {
-            String s = format(in.next());
-            if (s.equals("")) {
-                continue;
-            }
-            hl.insertWord(s);
-        }
-        System.out.println("Heavy Handed Self-Adjusting List Approach:\n" + hl.metrics());
-        runTime = convertMilliSecondsToSeconds(System.currentTimeMillis() - startTime);
-        System.out.printf("Time: %f seconds.\n\n", runTime);
+        run(new HeavyHandedSelfAdjustingList());
 
-        in = new Scanner(file);
-        
         // More Elegeant Self-Adjusting List Approach.
-        startTime = System.currentTimeMillis();
-        MoreElegeantSelfAdjustingList el = new MoreElegeantSelfAdjustingList();
-        while (in.hasNext()) {
-            String s = format(in.next());
-            if (s.equals("")) {
-                continue;
-            }
-            el.insertWord(s);
-        }
-        System.out.println("More Elegeant Self-Adjusting List Approach:\n" + el.metrics());
-        runTime = convertMilliSecondsToSeconds(System.currentTimeMillis() - startTime);
-        System.out.printf("Time: %f seconds.\n\n", runTime);
-
-        in = new Scanner(file);
+        run(new MoreElegeantSelfAdjustingList());
 
         // Binary Tree Approach.
-        startTime = System.currentTimeMillis();
-        BinaryTree b = new BinaryTree();
+        run(new BinaryTree());
+
+        // Hash Table Approach.
+        int tableSize = 1000;
+        run(new HashTable(tableSize));
+    }
+
+    public static void run(WordStorage storage) throws FileNotFoundException {
+        Scanner in = new Scanner(file);
+        Long startTime = System.currentTimeMillis();
         while (in.hasNext()) {
             String s = format(in.next());
-            if (s.equals("")) {
-                continue;
-            }
-            b.insertWord(s);
+            if (s.equals("")) continue;
+            storage.insertWord(s);
         }
-        System.out.println("Binary Tree Approach:\n" + b.metrics());
-        runTime = convertMilliSecondsToSeconds(System.currentTimeMillis() - startTime);
-        System.out.printf("Time: %f seconds.\n", runTime);
+        double runTime = convertMilliSecondsToSeconds(System.currentTimeMillis() - startTime);
+        System.out.println(storage.approachName() + " Approach:\n" + storage.metrics());
+        System.out.println("Runtime: " + runTime + " seconds.\n");
     }
 
     public static double convertMilliSecondsToSeconds(long milliSeconds) {
