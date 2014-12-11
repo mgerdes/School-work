@@ -1,6 +1,6 @@
 package Lists;
 
-import WordStorage.WordStorage;
+import Storage.WordStorage;
 import Node.*;
 
 public class SortedLinkedList implements WordStorage {
@@ -34,25 +34,6 @@ public class SortedLinkedList implements WordStorage {
             wordNode.setLink(curNode);
             numberOfReferenceChanges += 2;
         }
-    }
-
-    public void add(Node node) {
-        Node curNode = front;
-        Node prevNode = front;
-        while (node.getWord().compareTo(curNode.getWord()) > 0) {
-            prevNode = curNode;
-            curNode = curNode.getLink();
-        }
-        prevNode.setLink(node);
-        node.setLink(curNode);
-    }
-
-    public Node find(String s) {
-        Node curNode = front;
-        while (s.compareTo(curNode.getWord()) > 0) {
-            curNode = curNode.getLink();
-        }
-        return curNode;
     }
 
     public boolean isEmpty() {

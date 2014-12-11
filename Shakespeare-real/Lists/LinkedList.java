@@ -1,6 +1,6 @@
 package Lists;
 
-import WordStorage.WordStorage;
+import Storage.WordStorage;
 import Node.*;
 
 public class LinkedList implements WordStorage {
@@ -97,7 +97,7 @@ public class LinkedList implements WordStorage {
         String s = "";
         Node curNode = front;
         while (curNode != null) {
-            s += curNode.getWord() + "(" + curNode.getCount() + "), ";
+            s += curNode.getWord() + "\n";
             curNode = curNode.getLink();
         }
         return s;

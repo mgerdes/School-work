@@ -1,7 +1,7 @@
 package Trees;
 
-import WordStorage.WordStorage;
-import Node.*;
+import Storage.WordStorage;
+import Node.Node;
 
 public class BinaryTree implements WordStorage {
     private int numberOfComparisons;

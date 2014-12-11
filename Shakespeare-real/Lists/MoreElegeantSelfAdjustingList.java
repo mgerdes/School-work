@@ -1,6 +1,6 @@
 package Lists;
 
-import WordStorage.WordStorage;
+import Storage.WordStorage;
 import Node.*;
 
 public class MoreElegeantSelfAdjustingList implements WordStorage {
