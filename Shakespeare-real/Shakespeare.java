@@ -16,12 +16,12 @@ public class Shakespeare {
 
     public static void main(String[] args) throws FileNotFoundException {
         run(new LinkedList());
-//        run(new SortedLinkedList());
-//        run(new HeavyHandedSelfAdjustingList());
-//        run(new MoreElegeantSelfAdjustingList());
-//        run(new BinaryTree());
-//        System.out.print(storage);int tableSize = 1000;
-//        run(new HashTableWithLinkedList(tableSize));
+        run(new SortedLinkedList());
+        run(new HeavyHandedSelfAdjustingList());
+        run(new MoreElegeantSelfAdjustingList());
+        run(new BinaryTree());
+        System.out.print(storage);int tableSize = 1000;
+        run(new HashTableWithLinkedList(tableSize));
     }
 
     public static void run(WordStorage storage) throws FileNotFoundException {
