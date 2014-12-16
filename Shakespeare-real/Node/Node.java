@@ -1,5 +1,10 @@
 package Node;
 
+// This is my node class.
+// It works for both linked-lists and binary trees.
+// It contains a String object to store the word.
+// It also contains a count integer to store the amount of times the word occured.
+
 public class Node {
     private Node link;
     private Node leftChild;
