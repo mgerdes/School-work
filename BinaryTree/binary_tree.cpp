@@ -40,7 +40,110 @@ BinaryTreeNode *BinaryTree::findBinaryTreeNode(const std::string &str)
 
 void BinaryTree::remove(const std::string &str)
 {
+    BinaryTreeNode *node = findBinaryTreeNode(str);
 
+    if (!node)
+    {
+        return;
+    }
+
+    if (!node->leftChild && !node->rightChild) 
+    {
+        if (node->parent) 
+        {
+            if (node->parent->leftChild == node)
+            {
+                node->parent->leftChild = NULL;
+            }
+            else
+            {
+                node->parent->rightChild = NULL;
+            }
+        }
+        else 
+        {
+            root = NULL;
+        }
+    } 
+    else if (node->leftChild && !node->rightChild)
+    {
+        if (node->parent)
+        {
+            if (node->parent->leftChild == node)
+            {
+                node->parent->leftChild = node->leftChild;
+            }
+            else
+            {
+                node->parent->rightChild = node->leftChild;
+            }
+            node->leftChild->parent = node->parent;
+        }
+        else
+        {
+            root = node->leftChild;
+            node->leftChild->parent = NULL;
+        }
+    }
+    else if (node->rightChild && !node->leftChild)
+    {
+        if (node->parent)
+        {
+            if (node->parent->rightChild == node)
+            {
+                node->parent->rightChild = node->rightChild;
+            }
+            else
+            {
+                node->parent->leftChild = node->rightChild;
+            }
+            node->rightChild->parent = node->parent;
+        }
+        else
+        {
+            root = node->rightChild;
+            node->rightChild->parent = NULL;
+        }
+    }
+    else
+    {
+        BinaryTreeNode *min = node->rightChild;
+        while (min->leftChild)
+        {
+            min = min->leftChild;
+        }
+        if (min->parent != node)
+        {
+            transplant(min, min->rightChild);
+            min->rightChild = node->rightChild;
+            node->rightChild->parent = min;
+        }
+        transplant(node, min);
+        min->leftChild = node->leftChild;
+        min->leftChild->parent = min;
+    }
+
+    delete node;
+}
+
+void BinaryTree::transplant(BinaryTreeNode *u, BinaryTreeNode *v) 
+{
+    if (!u->parent)
+    {
+        root == v;
+    }
+    else if (u == u->parent->leftChild)
+    {
+        u->parent->leftChild = v;
+    }
+    else
+    {
+        u->parent->rightChild = v;
+    }
+    if (v)
+    {
+        v->parent = u->parent;
+    }
 }
 
 void BinaryTree::insert(const std::string &str) 

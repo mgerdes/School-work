@@ -10,6 +10,8 @@ class BinaryTree {
 
         BinaryTreeNode *findBinaryTreeNode(const std::string &str);
 
+        void transplant(BinaryTreeNode *u, BinaryTreeNode *v);
+
     public:
         BinaryTree(); 
 

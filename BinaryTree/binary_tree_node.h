@@ -18,8 +18,6 @@ struct BinaryTreeNode
 
     ~BinaryTreeNode()
     {
-        delete leftChild;
-        delete rightChild;
         delete value;
     }
 
