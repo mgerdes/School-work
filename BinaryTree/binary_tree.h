@@ -15,6 +15,8 @@ class BinaryTree {
     public:
         BinaryTree(); 
 
+        ~BinaryTree();
+
         BinaryTree(const std::string &str);
 
         void insert(const std::string &str);

@@ -3,8 +3,8 @@
 int main() 
 {
     Huffman tree;
-    tree.initializeFromFile("resources/test");
-    tree.encodeFile("resources/test", "resources/enc_test");
-    tree.decodeFile("resources/enc_test", "resources/dec_test");
+    tree.initializeFromFile("resources/shakespeare.txt");
+    tree.encodeFile("resources/shakespeare.txt", "resources/enc");
+    tree.decodeFile("resources/enc", "resources/dec");
     return 0;
 }

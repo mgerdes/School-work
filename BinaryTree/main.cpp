@@ -92,7 +92,22 @@ int main()
         }
         else if (command == "help")
         {
+            std::cout << "insert <string>:" << std::endl 
+                << "If <string> is already IN the set, increment the count (stored in the node "
+                << "containing <string>). If <string> is NOT already in the set, add it to the set "
+                << "(and set the count to 1). "
+                << "In either case, send <string> <count> to cout." 
+                << std::endl << std::endl
+                << "delete <string>:" << std::endl
 
+                << "If <string> is NOT in the set, output <string> <-1>." << std::endl
+                << "If <string> IS in the set, and has a count of more than 1, decrement "
+                << "the count corresponding to the string, and output <string> <nnn>, "
+                << "where nnn is the new count. If <string> IS in the set, and has a count"
+                << " of exactly 1, delete it from the set, and output <string> <0>." 
+                << std::endl << std::endl
+
+                << "search <string>:" << std::endl;
         }
         else if (command == "exit")
         {

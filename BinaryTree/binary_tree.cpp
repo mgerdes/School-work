@@ -2,6 +2,10 @@
 
 BinaryTree::BinaryTree() : root(NULL) { };
 
+BinaryTree::~BinaryTree() {
+    delete root;
+};
+
 BinaryTreeNode *BinaryTree::findBinaryTreeNode(const std::string &str)
 {
     BinaryTreeNode *currentNode = root; 

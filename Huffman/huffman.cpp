@@ -17,6 +17,8 @@ void Huffman::initializeFromFile(std::string fileName)
 
     if (inputFile.fail()) 
     {
+        std::cout << "Failed to initialze from file " << fileName << std::endl; 
+        return;
     }
 
     while (!inputFile.eof())
@@ -29,13 +31,29 @@ void Huffman::initializeFromFile(std::string fileName)
 
     createHuffmanTree();
     setCodes(root, new std::string(""));
-
+    
+    if (!length7NonLeafCode)
+    {
+        length7NonLeafCode = new std::string("1234567");
+        std::cout << "Failed to set the length 7 non-leaf code, there may be problems\n";
+    }
 }
 
 void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileName)
 {
     std::ifstream decodedFile(decodedFileName, std::ios::binary);
+    if (decodedFile.fail())
+    {
+        std::cout << "Failed to open file " << decodedFileName << std::endl; 
+        return;
+    }
+
     std::ofstream encodedFile(encodedFileName, std::ios::binary);
+    if (encodedFile.fail())
+    {
+        std::cout << "Failed to open file " << encodedFileName << std::endl; 
+        return;
+    }
 
     int currentBitPosition = 0;
     char outputChar = 0;
@@ -90,7 +108,18 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
 void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileName)
 {
     std::ifstream encodedFile(encodedFileName, std::ios::binary);
+    if (decodedFile.fail())
+    {
+        std::cout << "Failed to open file " << decodedFileName << std::endl; 
+        return;
+    }
+
     std::ofstream decodedFile(decodedFileName, std::ios::binary);
+    if (encodedFile.fail())
+    {
+        std::cout << "Failed to open file " << encodedFileName << std::endl; 
+        return;
+    }
 
     HuffmanNode *currentNode = root;
 
