@@ -45,6 +45,12 @@ void Huffman::initializeFromFile(std::string fileName)
 
 void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileName)
 {
+    if (!root)
+    {
+        std::cout << "You must first initialize the tree with a file\n";
+        return;
+    }
+
     std::ifstream decodedFile(decodedFileName, std::ios::binary);
     if (decodedFile.fail())
     {
@@ -111,6 +117,12 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
 
 void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileName)
 {
+    if (!root)
+    {
+        std::cout << "You must first initialize the tree with a file\n";
+        return;
+    }
+
     std::ifstream encodedFile(encodedFileName, std::ios::binary);
     if (encodedFile.fail())
     {
