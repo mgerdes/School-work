@@ -1,13 +1,17 @@
 #include "huffman.h"
 
-Huffman::Huffman() 
-    : length7NonLeafCode(NULL),
-    charToNode(new HuffmanNode*[256]),
-    charToCode(new std::string*[256])
+Huffman::Huffman() : root(NULL), charToCode(NULL), charToNode(NULL), length7NonLeafCode(NULL)
 { }
+
+Huffman::~Huffman()
+{
+    cleanUp();    
+}
 
 void Huffman::initializeFromFile(std::string fileName)
 {
+    charToCode = new std::string*[256];
+    charToNode = new HuffmanNode*[256];
     for (int i = 0; i < 256; i++) 
     {
         charToNode[i] = new HuffmanNode((unsigned char) i);
@@ -30,7 +34,7 @@ void Huffman::initializeFromFile(std::string fileName)
     inputFile.close();
 
     createHuffmanTree();
-    setCodes(root, new std::string(""));
+    setCodes(root, "");
     
     if (!length7NonLeafCode)
     {
@@ -108,16 +112,16 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
 void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileName)
 {
     std::ifstream encodedFile(encodedFileName, std::ios::binary);
-    if (decodedFile.fail())
+    if (encodedFile.fail())
     {
-        std::cout << "Failed to open file " << decodedFileName << std::endl; 
+        std::cout << "Failed to open file " << encodedFileName << std::endl; 
         return;
     }
 
     std::ofstream decodedFile(decodedFileName, std::ios::binary);
-    if (encodedFile.fail())
+    if (decodedFile.fail())
     {
-        std::cout << "Failed to open file " << encodedFileName << std::endl; 
+        std::cout << "Failed to open file " << decodedFileName << std::endl; 
         return;
     }
 
@@ -164,25 +168,52 @@ void Huffman::createHuffmanTree()
     root = priorityQueue.extractMin();
 }
 
-void Huffman::setCodes(HuffmanNode *node, std::string *currentCode) 
+void Huffman::setCodes(HuffmanNode *node, std::string currentCode) 
 {
     if (!node->leftChild && !node->rightChild)
     {
-        charToCode[node->ch] = new std::string(*currentCode);
+        charToCode[node->ch] = new std::string(currentCode);
     }
     else
     {
-        if (!length7NonLeafCode && currentCode->length() >= 7)
+        if (!length7NonLeafCode && currentCode.length() >= 7)
         {
-            length7NonLeafCode = new std::string(*currentCode); 
+            length7NonLeafCode = new std::string(currentCode); 
         }
 
-        currentCode->push_back('0');
+        currentCode.push_back('0');
         setCodes(node->leftChild, currentCode);
-        currentCode->pop_back();
+        currentCode.pop_back();
 
-        currentCode->push_back('1');
+        currentCode.push_back('1');
         setCodes(node->rightChild, currentCode);
-        currentCode->pop_back();
+        currentCode.pop_back();
+    }
+}
+
+void Huffman::cleanUp()
+{
+    if (root)
+    {
+        delete root;       
+    }
+    if (charToNode)
+    {
+        delete[] charToNode;
+    }
+    if (charToCode)
+    {
+        for (int i = 0; i < 255; i++)
+        {
+            if (charToCode[i])
+            {
+                delete charToCode[i];
+            }
+        }
+        delete[] charToCode;
+    }
+    if (length7NonLeafCode)
+    {
+        delete length7NonLeafCode;
     }
 }
