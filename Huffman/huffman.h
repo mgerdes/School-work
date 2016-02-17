@@ -16,7 +16,9 @@ class Huffman
         std::string *length7NonLeafCode;
 
         void createHuffmanTree();
+
         void setCodes(HuffmanNode *node, std::string currentCode);
+
         void cleanUp();
 
     public:

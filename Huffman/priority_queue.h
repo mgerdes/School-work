@@ -21,6 +21,8 @@ class PriorityQueue
         void swap(int i, int j);
         
     public:
+        PriorityQueue(int size);
+
         PriorityQueue(HuffmanNode **nodes, int size);
 
         ~PriorityQueue();

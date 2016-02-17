@@ -35,7 +35,7 @@ void Huffman::initializeFromFile(std::string fileName)
 
     createHuffmanTree();
     setCodes(root, "");
-    
+
     if (!length7NonLeafCode)
     {
         length7NonLeafCode = new std::string("1234567");

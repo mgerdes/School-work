@@ -63,6 +63,12 @@ PriorityQueue::PriorityQueue(HuffmanNode **nodes, int size)
     }
 }
 
+PriorityQueue::PriorityQueue(int size)
+{
+    this->size = 0;
+    this->heap = new HuffmanNode*[size];
+}
+
 PriorityQueue::~PriorityQueue()
 {
     delete[] heap;
