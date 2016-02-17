@@ -11,15 +11,15 @@ class Huffman
 {
     private: 
         HuffmanNode *root;
-        HuffmanNode **charToNode;
-        std::string **charToCode;
-        std::string *length7NonLeafCode;
+        HuffmanNode charToNode[256];
+        std::string charToCode[256];
+
+        bool isLength7NonLeafCodeSet = false;
+        std::string length7NonLeafCode;
 
         void createHuffmanTree();
 
         void setCodes(HuffmanNode *node, std::string currentCode);
-
-        void cleanUp();
 
     public:
         Huffman();

@@ -1,9 +1,7 @@
 #include "multi_character_huffman.h"
 
 MultiCharacterHuffman::MultiCharacterHuffman()
-{
-
-}
+    : stringToHuffmanNode(1000000), stringToHuffmanCode(1000000) { }
 
 void MultiCharacterHuffman::initializeFromFile(std::string fileName) 
 {
@@ -43,13 +41,14 @@ void MultiCharacterHuffman::initializeFromFile(std::string fileName)
             strings[i] = strings[i].substr(1);
             strings[i].push_back(c);
 
-            if (stringToHuffmanNode.count(strings[i]) == 0)
+            HuffmanNode *node = stringToHuffmanNode[strings[i]];
+            if (!node)
             {
                 stringToHuffmanNode[strings[i]] = new HuffmanNode(strings[i], i);
             }
             else
             {
-                stringToHuffmanNode[strings[i]]->weight += i;
+                node->weight += i;
             }
         }
 
@@ -81,16 +80,17 @@ void MultiCharacterHuffman::makeHuffmanTree()
 
 void MultiCharacterHuffman::encodeFile(std::string decodedFileName, std::string encodedFileName)
 {
-
     std::ifstream decodedFile(decodedFileName, std::ios::binary);
     std::string file((std::istreambuf_iterator<char>(decodedFile)),
             std::istreambuf_iterator<char>());
 
     unsigned long long *minCodeLength = new unsigned long long[file.length()];
-    unsigned long long *parentPointer = new unsigned long long[file.length()];
+    unsigned long long *bestLength = new unsigned long long[file.length() + 1];
+
+    bestLength[file.length()] = -1;
 
     minCodeLength[file.length() - 1] = stringToHuffmanCode[file.substr(file.length() - 1, 1)]->length();
-    parentPointer[file.length() - 1] = -1;
+    bestLength[file.length() - 1] = 1;
 
     for (int i = file.length() - 2; i >= 0; i--)
     {
@@ -105,15 +105,108 @@ void MultiCharacterHuffman::encodeFile(std::string decodedFileName, std::string 
             int c = minCodeLength[i + j] + stringToHuffmanCode[file.substr(i, j)]->length();
             if (c < minCodeLength[i])
             {
-                parentPointer[i] = i + j;
                 minCodeLength[i] = c;
+                bestLength[i] = j;
             }
         }
     }
 
-    std::cout << minCodeLength[0] << std::endl;
+    std::ofstream encodedFile(encodedFileName, std::ios::binary);
 
+    int lengthOnes = 0;
+    int lengthTwos = 0;
+    int lengthThrees = 0;
+    int lengthFours = 0;
+
+    int currentBitPosition = 0;
+    char outputChar = 0;
+    int currentPosition = 0;
+    while (bestLength[currentPosition] != -1)
+    {
+        std::string *code = stringToHuffmanCode[file.substr(currentPosition, bestLength[currentPosition])];
+
+        if (bestLength[currentPosition] == 1)
+        {
+            lengthOnes++;
+        }
+        if (bestLength[currentPosition] == 2)
+        {
+            lengthTwos++;
+        }
+        if (bestLength[currentPosition] == 3)
+        {
+            lengthThrees++;
+        }
+        if (bestLength[currentPosition] == 4)
+        {
+            lengthFours++;
+        }
+
+        for (int j = 0; j < code->length(); j++)
+        {
+            int currentBytePosition = currentBitPosition >> 3;         
+            int currentBytesBitPosition = currentBitPosition % 8;
+
+            if (currentBytesBitPosition == 0 && currentBitPosition != 0) 
+            {
+                encodedFile.put(outputChar);
+                outputChar = 0;
+            }
+
+            if (code->at(j) == '1')
+            {
+                outputChar |= 1 << currentBytesBitPosition;
+            }
+
+            currentBitPosition++;
+        }
+
+        currentPosition = currentPosition + bestLength[currentPosition];
+    }
+
+    std::cout << lengthOnes << " - " << lengthTwos << " - " << lengthThrees << " - " << lengthFours << std::endl;
+
+    encodedFile.close();
     decodedFile.close();
+}
+
+void MultiCharacterHuffman::decodeFile(std::string encodedFileName, std::string decodedFileName)
+{
+    std::ifstream encodedFile(encodedFileName, std::ios::binary);
+    std::ofstream decodedFile(decodedFileName, std::ios::binary);
+
+    HuffmanNode *currentNode = root;
+
+    while(true)
+    {
+        char inputChar;
+        encodedFile.get(inputChar);
+        if (encodedFile.eof())
+        {
+            break;
+        }
+
+        for (int j = 0; j < 8; j++)
+        {
+            if ((inputChar & (1 << j)) >> j) 
+            {
+                currentNode = currentNode->rightChild; 
+            }
+            else
+            {
+                currentNode = currentNode->leftChild;
+            }
+
+            if (!currentNode->rightChild && !currentNode->leftChild)
+            {
+                for (int i = 0; i < currentNode->str.length(); i++)
+                {
+                    decodedFile.put(currentNode->str[i]);
+                }
+                currentNode = root;
+            }
+        }
+    }
 }
 
 void MultiCharacterHuffman::setCodes(HuffmanNode *node, std::string currentCode) 

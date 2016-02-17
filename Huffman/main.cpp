@@ -3,10 +3,6 @@
 
 int main() 
 {
-    MultiCharacterHuffman newTree;
-    newTree.initializeFromFile("resources/shakespeare.txt");
-    newTree.encodeFile("resources/shakespeare.txt", "resources/enc");
-
     Huffman tree;
     tree.initializeFromFile("resources/shakespeare.txt");
     tree.encodeFile("resources/shakespeare.txt", "resources/enc");

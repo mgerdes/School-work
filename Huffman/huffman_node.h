@@ -11,6 +11,9 @@ struct HuffmanNode
     HuffmanNode *leftChild;
     HuffmanNode *rightChild;
 
+    HuffmanNode()
+        : weight(0), leftChild(NULL), rightChild(NULL) { };
+
     HuffmanNode(char ch)
         : ch(ch), weight(0), leftChild(NULL), rightChild(NULL) { };
 
@@ -22,10 +25,12 @@ struct HuffmanNode
 
     ~HuffmanNode()
     {
-        if (leftChild) {
-            delete leftChild;
+        if (leftChild && leftChild->leftChild)
+        {
+            delete leftChild;                 
         }
-        if (rightChild) {
+        if (rightChild && rightChild->rightChild)
+        {
             delete rightChild;
         }
     }

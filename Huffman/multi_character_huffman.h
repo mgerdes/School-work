@@ -14,7 +14,7 @@
 class MultiCharacterHuffman
 {
     private: 
-        int maxLengthStrings = 6;
+        int maxLengthStrings = 4;
 
         HuffmanNode *root;
 
@@ -31,6 +31,8 @@ class MultiCharacterHuffman
         void initializeFromFile(std::string fileName);
 
         void encodeFile(std::string decodedFileName, std::string encodedFileName);
+
+        void decodeFile(std::string encodedFileName, std::string decodedFileName);
 };
 
 #endif // MULTI_CHARACTER_HUFFMAN

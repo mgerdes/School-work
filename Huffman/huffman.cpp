@@ -1,20 +1,23 @@
 #include "huffman.h"
 
-Huffman::Huffman() : root(NULL), charToCode(NULL), charToNode(NULL), length7NonLeafCode(NULL)
-{ }
+Huffman::Huffman() : root(NULL)
+{ 
+    for (int i = 0; i < 256; i++) 
+    {
+        charToNode[i].ch = (unsigned char) i;
+    }
+}
 
 Huffman::~Huffman()
 {
-    cleanUp();    
+    delete root;
 }
 
 void Huffman::initializeFromFile(std::string fileName)
 {
-    charToCode = new std::string*[256];
-    charToNode = new HuffmanNode*[256];
-    for (int i = 0; i < 256; i++) 
+    for (int i = 0; i < 256; i++)
     {
-        charToNode[i] = new HuffmanNode((unsigned char) i);
+        charToNode[i].weight = 0;
     }
 
     std::ifstream inputFile(fileName, std::ios::binary);
@@ -29,17 +32,16 @@ void Huffman::initializeFromFile(std::string fileName)
     {
         char c;
         inputFile.get(c);
-        charToNode[c]->weight++;
+        charToNode[c].weight++;
     }
     inputFile.close();
 
     createHuffmanTree();
     setCodes(root, "");
 
-    if (!length7NonLeafCode)
+    if (!isLength7NonLeafCodeSet)
     {
-        length7NonLeafCode = new std::string("1234567");
-        std::cout << "Failed to set the length 7 non-leaf code, there may be problems\n";
+        length7NonLeafCode = "0000000";
     }
 }
 
@@ -76,9 +78,8 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
             break;
         }
 
-        std::string *code = charToCode[inputChar];
-
-        for (int j = 0; j < code->length(); j++)
+        std::string code = charToCode[inputChar];
+        for (int j = 0; j < code.length(); j++)
         {
             int currentBytePosition = currentBitPosition >> 3;         
             int currentBytesBitPosition = currentBitPosition % 8;
@@ -89,7 +90,7 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
                 outputChar = 0;
             }
 
-            if (code->at(j) == '1')
+            if (code.at(j) == '1')
             {
                 outputChar |= 1 << currentBytesBitPosition;
             }
@@ -103,7 +104,7 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
     for (int i = 0; i < bitsLeftToFill; i++)
     {
         int currentBytesBitPosition = currentBitPosition % 8;
-        if (length7NonLeafCode->at(i) == '1')
+        if (length7NonLeafCode.at(i) == '1')
         {
             outputChar |= 1 << currentBytesBitPosition;
         }
@@ -166,11 +167,18 @@ void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileNam
             }
         }
     }
+
+    encodedFile.close();
+    decodedFile.close();
 }
 
 void Huffman::createHuffmanTree()
 {
-    PriorityQueue priorityQueue = PriorityQueue(charToNode, 256);
+    PriorityQueue priorityQueue = PriorityQueue(256);
+    for (int i = 0; i < 256; i++)
+    {
+        priorityQueue.insert(&charToNode[(unsigned char) i]);
+    }
     while (priorityQueue.getSize() > 1) 
     {
         HuffmanNode *n1 = priorityQueue.extractMin();
@@ -184,13 +192,14 @@ void Huffman::setCodes(HuffmanNode *node, std::string currentCode)
 {
     if (!node->leftChild && !node->rightChild)
     {
-        charToCode[node->ch] = new std::string(currentCode);
+        charToCode[node->ch] = currentCode;
     }
     else
     {
-        if (!length7NonLeafCode && currentCode.length() >= 7)
+        if (!isLength7NonLeafCodeSet && currentCode.length() >= 7)
         {
-            length7NonLeafCode = new std::string(currentCode); 
+            isLength7NonLeafCodeSet = true;
+            length7NonLeafCode = currentCode; 
         }
 
         currentCode.push_back('0');
@@ -200,32 +209,5 @@ void Huffman::setCodes(HuffmanNode *node, std::string currentCode)
         currentCode.push_back('1');
         setCodes(node->rightChild, currentCode);
         currentCode.pop_back();
-    }
-}
-
-void Huffman::cleanUp()
-{
-    if (root)
-    {
-        delete root;       
-    }
-    if (charToNode)
-    {
-        delete[] charToNode;
-    }
-    if (charToCode)
-    {
-        for (int i = 0; i < 255; i++)
-        {
-            if (charToCode[i])
-            {
-                delete charToCode[i];
-            }
-        }
-        delete[] charToCode;
-    }
-    if (length7NonLeafCode)
-    {
-        delete length7NonLeafCode;
     }
 }
