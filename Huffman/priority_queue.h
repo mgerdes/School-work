@@ -2,7 +2,6 @@
 #define PRIORITY_QUEUE
 
 #include "huffman_node.h"
-#include "stdio.h"
 
 class PriorityQueue 
 {

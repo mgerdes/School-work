@@ -2,6 +2,7 @@
 #define MULTI_CHARACTER_HUFFMAN
 
 #include <string>
+#include <iostream>
 #include <fstream>
 #include <streambuf>
 #include <unordered_map>

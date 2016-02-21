@@ -113,34 +113,12 @@ void MultiCharacterHuffman::encodeFile(std::string decodedFileName, std::string 
 
     std::ofstream encodedFile(encodedFileName, std::ios::binary);
 
-    int lengthOnes = 0;
-    int lengthTwos = 0;
-    int lengthThrees = 0;
-    int lengthFours = 0;
-
     int currentBitPosition = 0;
     char outputChar = 0;
     int currentPosition = 0;
     while (bestLength[currentPosition] != -1)
     {
         std::string *code = stringToHuffmanCode[file.substr(currentPosition, bestLength[currentPosition])];
-
-        if (bestLength[currentPosition] == 1)
-        {
-            lengthOnes++;
-        }
-        if (bestLength[currentPosition] == 2)
-        {
-            lengthTwos++;
-        }
-        if (bestLength[currentPosition] == 3)
-        {
-            lengthThrees++;
-        }
-        if (bestLength[currentPosition] == 4)
-        {
-            lengthFours++;
-        }
 
         for (int j = 0; j < code->length(); j++)
         {
@@ -163,8 +141,6 @@ void MultiCharacterHuffman::encodeFile(std::string decodedFileName, std::string 
 
         currentPosition = currentPosition + bestLength[currentPosition];
     }
-
-    std::cout << lengthOnes << " - " << lengthTwos << " - " << lengthThrees << " - " << lengthFours << std::endl;
 
     encodedFile.close();
     decodedFile.close();
