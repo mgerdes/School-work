@@ -15,6 +15,18 @@ struct AVLTreeNode
     AVLTreeNode(const std::string &value, AVLTreeNode *parent, AVLTreeNode *leftChild, AVLTreeNode *rightChild) 
         : value(value), height(0), weight(0), parent(parent), leftChild(leftChild), rightChild(rightChild) { }
 
+    ~AVLTreeNode()
+    {
+        if (leftChild)
+        {
+            delete leftChild;
+        }
+        if (rightChild)
+        {
+            delete rightChild;
+        }
+    }
+
     int getBalanceFactor() 
     {
         int leftHeight = leftChild ? leftChild->height : -1;
@@ -56,11 +68,14 @@ class AVLTree
 
         void fixTree(AVLTreeNode *node);
 
-        int height(AVLTreeNode *node);
-
     public:
         AVLTree() 
             : root(NULL) { }
+
+        ~AVLTree()
+        {
+            delete root;
+        }
 
         void insert(const std::string &value);
 
