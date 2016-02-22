@@ -23,6 +23,14 @@ struct AVLTreeNode
         return leftHeight - rightHeight;
     }
 
+    void recalculateHeight() 
+    {
+        int leftHeight = leftChild ? leftChild->height : -1;
+        int rightHeight = rightChild ? rightChild->height : -1;
+
+        height = std::max(leftHeight, rightHeight) + 1;
+    }
+
     void list()
     {
         if (leftChild) 
@@ -49,8 +57,6 @@ class AVLTree
         void fixTree(AVLTreeNode *node);
 
         int height(AVLTreeNode *node);
-
-        void recalculateHeight(AVLTreeNode *node);
 
     public:
         AVLTree() 
@@ -107,32 +113,19 @@ void AVLTree::insert(const std::string &value)
     }
 }
 
-int AVLTree::height(AVLTreeNode *node) 
-{
-    if (!node) 
-    {
-        return -1;
-    }
-    return node->height;
-}
-
-void AVLTree::recalculateHeight(AVLTreeNode *node) 
-{
-    node->height = std::max(height(node->leftChild), height(node->rightChild)) + 1;
-}
-
-
-/*
- *          x               y
- *         / \             / \
- *        y   C     ->    A   x
- *       / \                 / \
- *      A   B               B   C
+/*                                     *
+ *          x               y          *
+ *         / \             / \         *
+ *        y   D     ->    A   x        *
+ *       / \                 / \       *
+ *      A   z               z   C      *
+ *         / \             / \         *
+ *        B   C           B   C        *
  */
 void AVLTree::rightRotate(AVLTreeNode *x) 
 {
     AVLTreeNode *y = x->leftChild;
-    AVLTreeNode *B = y->rightChild;
+    AVLTreeNode *z = y->rightChild;
 
     y->parent = x->parent; 
     if (x->parent) 
@@ -150,22 +143,22 @@ void AVLTree::rightRotate(AVLTreeNode *x)
     x->parent = y;
     y->rightChild = x;
 
-    if (B) 
+    if (z) 
     {
-        B->parent = x;
+        z->parent = x;
     }
-    x->leftChild = B;
+    x->leftChild = z;
 
     if (root == x) 
     {
         root = y;
     }
 
-    recalculateHeight(x);
-    recalculateHeight(y);
+    x->recalculateHeight();
+    y->recalculateHeight();
     if (y->parent) 
     {
-        recalculateHeight(y->parent);
+        y->parent->recalculateHeight();
     }
 }
 
@@ -174,12 +167,14 @@ void AVLTree::rightRotate(AVLTreeNode *x)
  *         / \               / \        *
  *        A   y     ->      x   C       *
  *           / \           / \          *
- *          B   C         A   B         *
+ *          z   D         A   z         *
+ *         / \               / \        *
+ *        B   C             B   C       *
  */      
 void AVLTree::leftRotate(AVLTreeNode *x) 
 {
     AVLTreeNode *y = x->rightChild;
-    AVLTreeNode *B = y->leftChild;
+    AVLTreeNode *z = y->leftChild;
 
     y->parent = x->parent; 
     if (x->parent) 
@@ -197,22 +192,22 @@ void AVLTree::leftRotate(AVLTreeNode *x)
     x->parent = y;
     y->leftChild = x;
 
-    if (B) 
+    if (z) 
     {
-        B->parent = x;
+        z->parent = x;
     }
-    x->rightChild = B;
+    x->rightChild = z;
 
     if (root == x) 
     {
         root = y;
     }
 
-    recalculateHeight(x);
-    recalculateHeight(y);
+    x->recalculateHeight();
+    y->recalculateHeight();
     if (y->parent) 
     {
-        recalculateHeight(y->parent);
+        y->parent->recalculateHeight();
     }
 }
 
@@ -225,16 +220,15 @@ void AVLTree::fixTree(AVLTreeNode *node)
     {
         return;
     }
-    recalculateHeight(y);
+    y->recalculateHeight();
 
     AVLTreeNode *x = y->parent;
 
     while (x) 
     {
-        recalculateHeight(x);
+        x->recalculateHeight();
         
-        int balanceFactor = abs(height(x->leftChild) - height(x->rightChild));
-        if (balanceFactor >= 2) 
+        if (abs(x->getBalanceFactor()) >= 2) 
         {
             if (x->leftChild == y && y->leftChild == z) 
             {
