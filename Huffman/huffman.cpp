@@ -38,12 +38,16 @@ Huffman::~Huffman()
 /*
  * The initializeFromFile method takes in a fileName and creates a frequency table which corresponds to how
  * often each character occurs in the file.
- * It than uses that frequency table to create the corresponding huffman tree.
+ * It then uses that frequency table to create the corresponding huffman tree.
  * It also sets the encoding string for every character.
- * It uses an ifstream, which allows you to read the file character by character.
+ * The method will also print out the number of bytes it read and how long it took to complete (in seconds).
  */
 void Huffman::initializeFromFile(std::string fileName)
 {
+    // Keep track of the start time.
+    std::chrono::time_point<std::chrono::system_clock> startTime, endTime;
+    startTime = std::chrono::system_clock::now();
+
     // Create the ifstream corresponding to the given fileName.
     std::ifstream inputFile(fileName, std::ios::binary);
 
@@ -62,19 +66,25 @@ void Huffman::initializeFromFile(std::string fileName)
         charToNode[i].weight = 0; 
     }
 
+    // Used to keep track of how many bytes are read from the file.
+    long bytesRead = 0;
+
     // This seemingly infinite loop will break when the end of file is reached.
     // It will also read in each character from the file and increase the weight of 
     // the corresponding node by 1. Effectively creating the frequency table.
     while (true)
     {
+        char c;
+        // Read in the next character.
+        inputFile.get(c);
+
         // Break when we reach the end of the file.
         if (inputFile.eof()) 
         {
             break;
         }
-        char c;
-        // Read in the next character.
-        inputFile.get(c);
+        bytesRead++;
+
         // Increase the weight of the node that corresponds to that character. 
         charToNode[c].weight++;
     }
@@ -89,6 +99,15 @@ void Huffman::initializeFromFile(std::string fileName)
 
     // Do some clean up work by closing the input file.
     inputFile.close();
+
+    // Print out how many bytes were read from the file.
+    printf("The initializeFromFile method was run with %s.\n", fileName.c_str());
+    printf("Bytes read: %d\n", bytesRead);
+
+    // Calculate time it took to run and print out that time.
+    endTime = std::chrono::system_clock::now();
+    std::chrono::duration<double> duration = endTime - startTime;
+    printf("Elapsed time: %.3f.\n", duration.count());
 }
 
 /*
@@ -97,9 +116,15 @@ void Huffman::initializeFromFile(std::string fileName)
  * To do this we go through the decodedFile character by character and encode each character, 
  * this encoding is then sent to the encodedFile.
  * Before this is called the initializeFromFile method must have been called by the user.
+ * Then it prints out how many bytes it read and output, the level of compression (bytesOutput / bytesRead), 
+ * and how long it took to complete (in seconds).
  */
 void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileName)
 {
+    // Keep track of the start time.
+    std::chrono::time_point<std::chrono::system_clock> startTime, endTime;
+    startTime = std::chrono::system_clock::now();
+
     // Make sure that the root is not null, if it is then the user did not call the initializeFromFile method.
     if (!root)
     {
@@ -123,6 +148,10 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
         return;
     }
 
+
+    // Used to keep track of how many bytes are read and output. 
+    long bytesRead = 0, bytesOutput = 0; 
+
     // I use the following two variables to keep track of the next (encoded) character to output and 
     // the currentBitPosition for that character. We need this information because potentially multiple
     // decoded characters could be encoded and placed in the same output character.
@@ -135,11 +164,13 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
         // Get the next character from the decodedFile.
         char inputChar;
         decodedFile.get(inputChar);
+
         // Check if we've reached the end of the file and break if so.
         if (decodedFile.eof())
         {
             break;
         }
+        bytesRead++;
 
         // Here we get the encoding corresponding to the character just extracted from the file.
         std::string code = charToCode[inputChar];
@@ -154,6 +185,7 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
                 encodedFile.put(outputChar);
                 outputChar = 0;
                 currentBitPosition = 0;
+                bytesOutput++;
             }
 
             // If the characters encoding has a 1 in the current position, then we need to set the 
@@ -190,10 +222,23 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
 
     // Finally we are ready to safely put the last character into the encodedFile.
     encodedFile.put(outputChar);
+    bytesOutput++;
 
     // Clean things up by closing the two files.
     decodedFile.close();
     encodedFile.close();
+
+
+    // Print out how many bytes were read and output.
+    printf("\n");
+    printf("The encoder encoded %s and placed it in %s.\n", decodedFileName.c_str(), encodedFileName.c_str());
+    printf("Bytes read: %d\nBytes output: %d\nLevel of compression: %.3f\n", 
+            bytesRead, bytesOutput, (double) bytesOutput / bytesRead);
+
+    // Calculate time it took to run and print out that time.
+    endTime = std::chrono::system_clock::now();
+    std::chrono::duration<double> duration = endTime - startTime;
+    printf("Elapsed time: %.3f seconds\n", duration.count());
 }
 
 /*
@@ -202,9 +247,14 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
  * To do this we go through each character in the encodedFile and use the tree to figure out 
  * the corresponding decoded characters.
  * Before this is called the initializeFromFile method must have been called by the user.
+ * It will also print out how many bytes it read and input and how long it took to run (in seconds).
  */
 void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileName)
 {
+    // Keep track of the start time.
+    std::chrono::time_point<std::chrono::system_clock> startTime, endTime;
+    startTime = std::chrono::system_clock::now();
+
     // Make sure that the root is not null, if it is then the user did not call the initializeFromFile method.
     if (!root)
     {
@@ -234,6 +284,8 @@ void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileNam
     // the chararacter corresponding to that node and reset the currentNode in the huffman tree
     // to be the root.
     
+    long bytesRead = 0, bytesOutput = 0;
+    
     // We start with the currentNode at the root.
     HuffmanNode *currentNode = root;
 
@@ -249,6 +301,7 @@ void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileNam
         {
             break;
         }
+        bytesRead++;
 
         // Go through each of the 8 bits in the character we just got from the encoded file.
         for (int j = 0; j < 8; j++)
@@ -274,6 +327,7 @@ void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileNam
             {
                 decodedFile.put(currentNode->ch);
                 currentNode = root;
+                bytesOutput++;
             }
         }
     }
@@ -281,6 +335,17 @@ void Huffman::decodeFile(std::string encodedFileName, std::string decodedFileNam
     // Clean up by closing the two files.
     encodedFile.close();
     decodedFile.close();
+
+    // Print out how many bytes were read and output.
+    printf("\n");
+    printf("The decoder decoded %s and placed it in %s.\n", encodedFileName.c_str(), decodedFileName.c_str());
+    printf("Bytes read: %d\nBytes output: %d\n", 
+            bytesRead, bytesOutput, (double) bytesOutput / bytesRead);
+
+    // Calculate time it took to run and print out that time.
+    endTime = std::chrono::system_clock::now();
+    std::chrono::duration<double> duration = endTime - startTime;
+    printf("Elapsed time: %.3f seconds\n", duration.count());
 }
 
 /*

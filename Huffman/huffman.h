@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <chrono>
 
 #include "huffman_node.h"
 #include "priority_queue.h"
