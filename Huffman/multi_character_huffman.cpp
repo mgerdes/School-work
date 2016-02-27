@@ -1,8 +1,5 @@
 #include "multi_character_huffman.h"
 
-MultiCharacterHuffman::MultiCharacterHuffman()
-    : stringToHuffmanNode(1000000), stringToHuffmanCode(1000000) { }
-
 void MultiCharacterHuffman::initializeFromFile(std::string fileName) 
 {
     std::ifstream inputFile(fileName, std::ios::binary);
@@ -122,18 +119,16 @@ void MultiCharacterHuffman::encodeFile(std::string decodedFileName, std::string 
 
         for (int j = 0; j < code->length(); j++)
         {
-            int currentBytePosition = currentBitPosition >> 3;         
-            int currentBytesBitPosition = currentBitPosition % 8;
-
-            if (currentBytesBitPosition == 0 && currentBitPosition != 0) 
+            if (currentBitPosition == 8) 
             {
                 encodedFile.put(outputChar);
                 outputChar = 0;
+                currentBitPosition = 0; 
             }
 
             if (code->at(j) == '1')
             {
-                outputChar |= 1 << currentBytesBitPosition;
+                outputChar |= 1 << currentBitPosition;
             }
 
             currentBitPosition++;

@@ -16,8 +16,9 @@ int main()
     tree.encodeFile("resources/shakespeare.txt", "resources/enc");
     tree.decodeFile("resources/enc", "resources/dec");
 
-    printf("Processing finished. Press ENTER to exit.\n");
-    char waitChar;
-    std::cin.get(waitChar);
+    MultiCharacterHuffman tree2;
+    tree2.initializeFromFile("resources/shakespeare.txt");
+    tree2.encodeFile("resources/shakespeare.txt", "resources/enc2");
+    tree2.decodeFile("resources/enc2", "resources/dec2");
     return 0;
 }
