@@ -15,5 +15,9 @@ int main()
     tree.initializeFromFile("resources/shakespeare.txt");
     tree.encodeFile("resources/shakespeare.txt", "resources/enc");
     tree.decodeFile("resources/enc", "resources/dec");
+
+    printf("Processing finished. Press ENTER to exit.\n");
+    char waitChar;
+    std::cin.get(waitChar);
     return 0;
 }
