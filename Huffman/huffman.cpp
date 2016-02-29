@@ -107,7 +107,7 @@ void Huffman::initializeFromFile(std::string fileName)
     // Calculate time it took to run and print out that time.
     endTime = std::chrono::system_clock::now();
     std::chrono::duration<double> duration = endTime - startTime;
-    printf("Elapsed time: %.3f.\n", duration.count());
+    printf("Elapsed time: %.3f seconds\n", duration.count());
 }
 
 /*
@@ -227,7 +227,6 @@ void Huffman::encodeFile(std::string decodedFileName, std::string encodedFileNam
     // Clean things up by closing the two files.
     decodedFile.close();
     encodedFile.close();
-
 
     // Print out how many bytes were read and output.
     printf("\n");
