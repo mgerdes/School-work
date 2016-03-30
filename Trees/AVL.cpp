@@ -20,6 +20,7 @@ void AVLTree::insert(const std::string &value)
     while (true) 
     {
         int comparison = value.compare(currentNode->value);
+        numComparisons++;
         if (comparison == 0) 
         {
             // Found the node in the tree so just increment its weight.
@@ -37,6 +38,7 @@ void AVLTree::insert(const std::string &value)
             {
                 // Found where to place the node.
                 currentNode->rightChild = new AVLTreeNode(value, currentNode, NULL, NULL);
+                numPointerChanges++;
                 // Fix up the tree
                 fixTree(currentNode->rightChild);
                 // Were finished so break
@@ -53,6 +55,7 @@ void AVLTree::insert(const std::string &value)
             {
                 // Found where to place the node.
                 currentNode->leftChild = new AVLTreeNode(value, currentNode, NULL, NULL);
+                numPointerChanges++;
                 // Fix up the tree
                 fixTree(currentNode->leftChild);
                 // Were finished so break
@@ -80,39 +83,50 @@ void AVLTree::rightRotate(AVLTreeNode *x)
     AVLTreeNode *z = y->rightChild;
 
     y->parent = x->parent; 
+    numPointerChanges++;
     if (x->parent) 
     {
         if (x->parent->leftChild == x) 
         {
             x->parent->leftChild = y;
+            numPointerChanges++;
         } 
         else 
         {
             x->parent->rightChild = y;
+            numPointerChanges++;
         }
     }
 
     x->parent = y;
+    numPointerChanges++;
     y->rightChild = x;
+    numPointerChanges++;
 
     if (z) 
     {
         z->parent = x;
+        numPointerChanges++;
     }
     x->leftChild = z;
+    numPointerChanges++;
 
     if (root == x) 
     {
         // Might need to change the root aswell.
         root = y;
+        numPointerChanges++;
     }
 
     // Make sure to recalculate the heights in case they changed.
     x->recalculateHeight();
+    numBFChanges++;
     y->recalculateHeight();
+    numBFChanges++;
     if (y->parent) 
     {
         y->parent->recalculateHeight();
+        numBFChanges++;
     }
 }
 
@@ -162,10 +176,13 @@ void AVLTree::leftRotate(AVLTreeNode *x)
 
     // Make sure to recalculate the heights in case they changed.
     x->recalculateHeight();
+    numBFChanges++;
     y->recalculateHeight();
+    numBFChanges++;
     if (y->parent) 
     {
         y->parent->recalculateHeight();
+        numBFChanges++;
     }
 }
 
@@ -197,6 +214,7 @@ void AVLTree::fixTree(AVLTreeNode *node)
         return;
     }
     y->recalculateHeight();
+    numBFChanges++;
 
     // Get grand-parent of the node
     AVLTreeNode *x = y->parent;
@@ -205,6 +223,7 @@ void AVLTree::fixTree(AVLTreeNode *node)
     while (x) 
     {
         x->recalculateHeight();
+        numBFChanges++;
         
         // Check if the balance factor is off
         if (abs(x->getBalanceFactor()) >= 2) 

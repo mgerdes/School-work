@@ -55,10 +55,6 @@ struct AVLTreeNode
 class AVLTree 
 {
     private:
-        int numPointerChanges; 
-        int numBFChanges;
-        int numComparisons;
-
         // The root of the entire tree
         AVLTreeNode *root;
 
@@ -78,9 +74,16 @@ class AVLTree
 
         int itemsInTreeHelper(AVLTreeNode *node);
     public:
+        int numPointerChanges; 
+        int numBFChanges;
+        int numComparisons;
+
         // Constructor just sets root to be null
-        AVLTree() 
-            : root(NULL) { }
+        AVLTree() :
+            root(NULL), 
+            numPointerChanges(0),
+            numBFChanges(0),
+            numComparisons(0) { }
 
         void insert(const std::string &value);
 

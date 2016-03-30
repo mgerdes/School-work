@@ -38,6 +38,7 @@ void BinaryTree::insert(std::string value)
             {
                 // Found where to place the node.
                 currentNode->rightChild = new BinaryTreeNode(value, 0, 0);
+                numPointerChanges++;
                 // We are finished so break
                 break;
             }
@@ -52,6 +53,7 @@ void BinaryTree::insert(std::string value)
             {
                 // Found where to place the node.
                 currentNode->leftChild = new BinaryTreeNode(value, 0, 0);
+                numPointerChanges++;
                 // We are finished so break
                 break;
             }

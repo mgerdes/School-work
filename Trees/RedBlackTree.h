@@ -40,10 +40,6 @@ struct RedBlackTreeNode
 class RedBlackTree 
 {
     private:
-        int numPointerChanges; 
-        int numReColorings;
-        int numComparisons;
-
         // Need to store the root of the tree and the special 'null' node.
         RedBlackTreeNode *root, *null;
 
@@ -66,6 +62,10 @@ class RedBlackTree
 
         int itemsInTreeHelper(RedBlackTreeNode *node);
     public:
+        int numPointerChanges; 
+        int numReColorings;
+        int numComparisons;
+
         RedBlackTree();
 
         void insert(std::string value);

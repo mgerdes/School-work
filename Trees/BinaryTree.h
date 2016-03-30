@@ -29,9 +29,6 @@ class BinaryTree
 {
     // The vanilla BinaryTree has no special fixup function
     private:
-        int numComparisons;
-        int numPointersChanged;
-
         BinaryTreeNode *root;
 
         // Function to find height of tree rooted at node
@@ -44,8 +41,14 @@ class BinaryTree
 
         int itemsInTreeHelper(BinaryTreeNode *node);
     public:
+        int numComparisons;
+        int numPointerChanges;
+
         // Simple constructor just sets the root to be null
-        BinaryTree() : root(0) { };
+        BinaryTree() :
+            root(0),
+            numComparisons(0),
+            numPointerChanges(0) { };
 
         void insert(std::string value);
 

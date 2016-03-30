@@ -8,6 +8,9 @@ RedBlackTree::RedBlackTree()
 {
     null = new RedBlackTreeNode("", BLACK, 0, 0, 0);
     root = 0;
+    numPointerChanges = 0;
+    numReColorings = 0;
+    numComparisons = 0;
 }
 
 /*
@@ -51,6 +54,7 @@ void RedBlackTree::insert(std::string value)
             {
                 // Found where to place the node.
                 currentNode->rightChild = new RedBlackTreeNode(value, RED, currentNode, null, null);
+                numPointerChanges++;
                 // Fix up the tree
                 fixTree(currentNode->rightChild);
                 // Were finished so break
@@ -67,6 +71,7 @@ void RedBlackTree::insert(std::string value)
             {
                 // Found where to place the node.
                 currentNode->leftChild = new RedBlackTreeNode(value, RED, currentNode, null, null);
+                numPointerChanges++;
                 // Fix up the tree
                 fixTree(currentNode->leftChild);
                 // Were finished so break
@@ -323,7 +328,7 @@ int RedBlackTree::heightHelper(RedBlackTreeNode *node)
 
 int RedBlackTree::uniqueItemsInTreeHelper(RedBlackTreeNode *node)
 {
-    if (!node) 
+    if (node == null) 
     {
         return 0;
     }
@@ -337,7 +342,7 @@ int RedBlackTree::uniqueItemsInTree()
 
 int RedBlackTree::itemsInTreeHelper(RedBlackTreeNode *node)
 {
-    if (!node)
+    if (node == null)
     {
         return 0;
     }
