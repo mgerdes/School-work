@@ -1,24 +1,30 @@
 #include "BinaryTree.h"
 
-BinaryTree::BinaryTree()
-{
-    this->root = 0;    
-}
-
+/*
+ * Vanilla insert function.
+ * Is the same insert function as the two other
+ * trees except it does no fixup after an insert.
+ */
 void BinaryTree::insert(std::string value) 
 {
-    if (!this->root) {
-        this->root = new BinaryTreeNode(value, 0, 0);
+    // Set this value to be the root.
+    if (!root) {
+        root = new BinaryTreeNode(value, 0, 0);
         return;
     }
-    
-    BinaryTreeNode *currentNode = this->root;
+
+    // Either find the string in the tree, or find where
+    // the string belongs in the tree and put it there.
+    // Then fix the tree up.
+    BinaryTreeNode *currentNode = root;
     while (true) 
     {
         int comparison = value.compare(currentNode->value);
         if (comparison == 0) 
         {
+            // Found the node in the tree so just increment its weight.
             currentNode->weight++;
+            // We are finished so break
             break;
         } 
         else if (comparison > 0) 
@@ -29,7 +35,9 @@ void BinaryTree::insert(std::string value)
             } 
             else 
             {
+                // Found where to place the node.
                 currentNode->rightChild = new BinaryTreeNode(value, 0, 0);
+                // We are finished so break
                 break;
             }
         } 
@@ -41,43 +49,62 @@ void BinaryTree::insert(std::string value)
             } 
             else 
             {
+                // Found where to place the node.
                 currentNode->leftChild = new BinaryTreeNode(value, 0, 0);
+                // We are finished so break
                 break;
             }
         }
     }
 }
 
+/*
+ * Returns the height of the tree.
+ * It simply call the heightHelper function which does all the work
+ */
 int BinaryTree::height() 
 {
     return heightHelper(root);
 }
 
+/*
+ * This calculates the height of the tree using
+ * the definition of height:
+ * height(tree) = max(height(tree.leftTree), height(tree.rightTree)) + 1
+ */
 int BinaryTree::heightHelper(BinaryTreeNode *node) 
 {
+    // Height of null tree is zero.
+    // This is the base case of the recursion
     if (!node) 
     {
         return 0;
     }
+    // Use the definition of height
     return 1 + std::max(heightHelper(node->rightChild), heightHelper(node->leftChild));
 }
 
+/*
+ * Prints an inorder traversal of the tree.
+ * It simply call the listHelper function which does all the work
+ */
 void BinaryTree::list()
 {
-    if (!root)
-    {
-        return;
-    }
     listHelper(root);
 }
 
 void BinaryTree::listHelper(BinaryTreeNode *node)
 {
+    // Null tree has no nodes so return
+    // This is the base case of the recursion
     if (!node) 
     {
         return;
     }
+    // First print the left-subtree.
     listHelper(node->leftChild);
+    // Then print the nodes value
     std::cout << node->value << std::endl;
+    // First print the right-subtree.
     listHelper(node->rightChild);
 }

@@ -42,7 +42,7 @@ int main() {
             //insert the shiz
             redBlackTree.insert(chari); 
             avlTree.insert(chari); 
-
+            binaryTree.insert(chari);
 
             for (int i = 0; i < 50; i++)
             {
@@ -66,9 +66,8 @@ int main() {
     inFile.close();
 
     std::cout << redBlackTree.height() << std::endl;
-    redBlackTree.list();
     std::cout << avlTree.height() << std::endl;
-    avlTree.list();
+    std::cout << binaryTree.height() << std::endl;
 
     return 0;
 }
