@@ -326,6 +326,10 @@ int RedBlackTree::heightHelper(RedBlackTreeNode *node)
     return 1 + std::max(heightHelper(node->rightChild), heightHelper(node->leftChild));
 }
 
+/*
+ * Does an inorder traversal of the tree to get the number of 
+ * nodes in the tree rooted at the inserted node
+ */
 int RedBlackTree::uniqueItemsInTreeHelper(RedBlackTreeNode *node)
 {
     if (node == null) 
@@ -335,11 +339,19 @@ int RedBlackTree::uniqueItemsInTreeHelper(RedBlackTreeNode *node)
     return 1 + uniqueItemsInTreeHelper(node->leftChild) + uniqueItemsInTreeHelper(node->rightChild);
 }
 
+/*
+ * Method simply calls the helper function with the root
+ */
 int RedBlackTree::uniqueItemsInTree() 
 {
     return uniqueItemsInTreeHelper(root);
 }
 
+/*
+ * Similar to uniqueItemsTreeHlper but adds the nodes->weight, instead of just 1, 
+ * to get the total number of nodes inserted into the tree rooted at the
+ * inserted node.
+ */
 int RedBlackTree::itemsInTreeHelper(RedBlackTreeNode *node)
 {
     if (node == null)
@@ -349,6 +361,9 @@ int RedBlackTree::itemsInTreeHelper(RedBlackTreeNode *node)
     return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
 }
 
+/*
+ * This simply calls the helper function
+ */
 int RedBlackTree::itemsInTree()
 {
     return itemsInTreeHelper(root);

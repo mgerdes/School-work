@@ -58,7 +58,9 @@ class BinaryTree
         // Does an inorder traversal of the entire tree 
         void list();
 
+        // Get the unique items in the tree (i.e number of nodes)
         int uniqueItemsInTree();
 
+        // Get the number of items in the tree (i.e. number of things inserted)
         int itemsInTree();
 };

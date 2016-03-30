@@ -67,11 +67,13 @@ class AVLTree
         // Helper function to fix the tree if there are any inbalances.
         void fixTree(AVLTreeNode *node);
 
-        // Helpler function to do an inorder traversal of the tree.
+        // Helper function to do an inorder traversal of the tree.
         void listHelper(AVLTreeNode *node);
 
+        // Helper function for getting unique item count
         int uniqueItemsInTreeHelper(AVLTreeNode *node);
 
+        // Helper function for getting item count
         int itemsInTreeHelper(AVLTreeNode *node);
     public:
         int numPointerChanges; 
@@ -93,7 +95,9 @@ class AVLTree
         // Do an inorder traversal of the tree
         void list();
 
+        // Get the unique items in the tree (i.e number of nodes)
         int uniqueItemsInTree();
 
+        // Get the number of items in the tree (i.e. number of things inserted)
         int itemsInTree();
 };

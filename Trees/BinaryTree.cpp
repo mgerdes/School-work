@@ -112,6 +112,10 @@ void BinaryTree::listHelper(BinaryTreeNode *node)
     listHelper(node->rightChild);
 }
 
+/*
+ * Does an inorder traversal of the tree to get the number of 
+ * nodes in the tree rooted at the inserted node
+ */
 int BinaryTree::uniqueItemsInTreeHelper(BinaryTreeNode *node)
 {
     if (!node) 
@@ -121,11 +125,19 @@ int BinaryTree::uniqueItemsInTreeHelper(BinaryTreeNode *node)
     return 1 + uniqueItemsInTreeHelper(node->leftChild) + uniqueItemsInTreeHelper(node->rightChild);
 }
 
+/*
+ * Method simply calls the helper function with the root
+ */
 int BinaryTree::uniqueItemsInTree() 
 {
     return uniqueItemsInTreeHelper(root);
 }
 
+/*
+ * Similar to uniqueItemsTreeHlper but adds the nodes->weight, instead of just 1, 
+ * to get the total number of nodes inserted into the tree rooted at the
+ * inserted node.
+ */
 int BinaryTree::itemsInTreeHelper(BinaryTreeNode *node)
 {
     if (!node)
@@ -135,6 +147,9 @@ int BinaryTree::itemsInTreeHelper(BinaryTreeNode *node)
     return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
 }
 
+/*
+ * This simply calls the helper function
+ */
 int BinaryTree::itemsInTree()
 {
     return itemsInTreeHelper(root);

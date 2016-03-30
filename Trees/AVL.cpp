@@ -342,6 +342,10 @@ int AVLTree::height()
     }
 }
 
+/*
+ * Does an inorder traversal of the tree to get the number of 
+ * nodes in the tree rooted at the inserted node
+ */
 int AVLTree::uniqueItemsInTreeHelper(AVLTreeNode *node)
 {
     if (!node) 
@@ -351,11 +355,19 @@ int AVLTree::uniqueItemsInTreeHelper(AVLTreeNode *node)
     return 1 + uniqueItemsInTreeHelper(node->leftChild) + uniqueItemsInTreeHelper(node->rightChild);
 }
 
+/*
+ * Method simply calls the helper function with the root
+ */
 int AVLTree::uniqueItemsInTree() 
 {
     return uniqueItemsInTreeHelper(root);
 }
 
+/*
+ * Similar to uniqueItemsTreeHlper but adds the nodes->weight, instead of just 1, 
+ * to get the total number of nodes inserted into the tree rooted at the
+ * inserted node.
+ */
 int AVLTree::itemsInTreeHelper(AVLTreeNode *node)
 {
     if (!node)
@@ -365,6 +377,9 @@ int AVLTree::itemsInTreeHelper(AVLTreeNode *node)
     return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
 }
 
+/*
+ * This simply calls the helper function
+ */
 int AVLTree::itemsInTree()
 {
     return itemsInTreeHelper(root);
