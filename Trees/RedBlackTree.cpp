@@ -358,7 +358,7 @@ int RedBlackTree::itemsInTreeHelper(RedBlackTreeNode *node)
     {
         return 0;
     }
-    return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
+    return 1 + node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
 }
 
 /*

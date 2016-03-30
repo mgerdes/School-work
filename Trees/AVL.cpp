@@ -364,7 +364,7 @@ int AVLTree::uniqueItemsInTree()
 }
 
 /*
- * Similar to uniqueItemsTreeHlper but adds the nodes->weight, instead of just 1, 
+ * Similar to uniqueItemsTreeHlper but also adds the nodes->weight, instead of just 1, 
  * to get the total number of nodes inserted into the tree rooted at the
  * inserted node.
  */
@@ -374,7 +374,7 @@ int AVLTree::itemsInTreeHelper(AVLTreeNode *node)
     {
         return 0;
     }
-    return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
+    return 1 + node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
 }
 
 /*

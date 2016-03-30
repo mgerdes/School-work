@@ -144,7 +144,7 @@ int BinaryTree::itemsInTreeHelper(BinaryTreeNode *node)
     {
         return 0;
     }
-    return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
+    return 1 + node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
 }
 
 /*

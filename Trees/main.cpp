@@ -315,7 +315,7 @@ void analyzeBinaryTree() {
 
 int main() {
     // Set the filename that should be read in.
-    fileName = "shakespeare.txt";
+    fileName = "numbers.txt";
 
     // First set the time to read in the file.
     setTimeToReadInFile();
