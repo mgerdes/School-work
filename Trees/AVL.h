@@ -55,6 +55,10 @@ struct AVLTreeNode
 class AVLTree 
 {
     private:
+        int numPointerChanges; 
+        int numBFChanges;
+        int numComparisons;
+
         // The root of the entire tree
         AVLTreeNode *root;
 
@@ -69,6 +73,10 @@ class AVLTree
 
         // Helpler function to do an inorder traversal of the tree.
         void listHelper(AVLTreeNode *node);
+
+        int uniqueItemsInTreeHelper(AVLTreeNode *node);
+
+        int itemsInTreeHelper(AVLTreeNode *node);
     public:
         // Constructor just sets root to be null
         AVLTree() 
@@ -81,4 +89,8 @@ class AVLTree
 
         // Do an inorder traversal of the tree
         void list();
+
+        int uniqueItemsInTree();
+
+        int itemsInTree();
 };

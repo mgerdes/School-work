@@ -29,6 +29,9 @@ class BinaryTree
 {
     // The vanilla BinaryTree has no special fixup function
     private:
+        int numComparisons;
+        int numPointersChanged;
+
         BinaryTreeNode *root;
 
         // Function to find height of tree rooted at node
@@ -36,6 +39,10 @@ class BinaryTree
 
         // Function to do inorder traversal of tree rooted at node
         void listHelper(BinaryTreeNode *node);
+
+        int uniqueItemsInTreeHelper(BinaryTreeNode *node);
+
+        int itemsInTreeHelper(BinaryTreeNode *node);
     public:
         // Simple constructor just sets the root to be null
         BinaryTree() : root(0) { };
@@ -47,4 +54,8 @@ class BinaryTree
 
         // Does an inorder traversal of the entire tree 
         void list();
+
+        int uniqueItemsInTree();
+
+        int itemsInTree();
 };

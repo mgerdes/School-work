@@ -20,6 +20,7 @@ void BinaryTree::insert(std::string value)
     while (true) 
     {
         int comparison = value.compare(currentNode->value);
+        numComparisons++;
         if (comparison == 0) 
         {
             // Found the node in the tree so just increment its weight.
@@ -107,4 +108,32 @@ void BinaryTree::listHelper(BinaryTreeNode *node)
     std::cout << node->value << std::endl;
     // First print the right-subtree.
     listHelper(node->rightChild);
+}
+
+int BinaryTree::uniqueItemsInTreeHelper(BinaryTreeNode *node)
+{
+    if (!node) 
+    {
+        return 0;
+    }
+    return 1 + uniqueItemsInTreeHelper(node->leftChild) + uniqueItemsInTreeHelper(node->rightChild);
+}
+
+int BinaryTree::uniqueItemsInTree() 
+{
+    return uniqueItemsInTreeHelper(root);
+}
+
+int BinaryTree::itemsInTreeHelper(BinaryTreeNode *node)
+{
+    if (!node)
+    {
+        return 0;
+    }
+    return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
+}
+
+int BinaryTree::itemsInTree()
+{
+    return itemsInTreeHelper(root);
 }

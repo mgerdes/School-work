@@ -322,3 +322,31 @@ int AVLTree::height()
         return 0;
     }
 }
+
+int AVLTree::uniqueItemsInTreeHelper(AVLTreeNode *node)
+{
+    if (!node) 
+    {
+        return 0;
+    }
+    return 1 + uniqueItemsInTreeHelper(node->leftChild) + uniqueItemsInTreeHelper(node->rightChild);
+}
+
+int AVLTree::uniqueItemsInTree() 
+{
+    return uniqueItemsInTreeHelper(root);
+}
+
+int AVLTree::itemsInTreeHelper(AVLTreeNode *node)
+{
+    if (!node)
+    {
+        return 0;
+    }
+    return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
+}
+
+int AVLTree::itemsInTree()
+{
+    return itemsInTreeHelper(root);
+}

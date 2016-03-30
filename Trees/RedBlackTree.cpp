@@ -33,6 +33,7 @@ void RedBlackTree::insert(std::string value)
     while (true) 
     {
         int comparison = value.compare(currentNode->value);
+        numComparisons++;
         if (comparison == 0) 
         {
             // Found the node in the tree so just increment its weight.
@@ -93,31 +94,39 @@ void RedBlackTree::rightRotate(RedBlackTreeNode *x)
     RedBlackTreeNode *z = y->rightChild;
 
     y->parent = x->parent; 
+    numPointerChanges++;
     if (x->parent) 
     {
         if (x->parent->leftChild == x) 
         {
             x->parent->leftChild = y;
+            numPointerChanges++;
         } 
         else 
         {
             x->parent->rightChild = y;
+            numPointerChanges++;
         }
     }
 
     x->parent = y;
+    numPointerChanges++;
     y->rightChild = x;
+    numPointerChanges++;
 
     if (z) 
     {
         z->parent = x;
+        numPointerChanges++;
     }
     x->leftChild = z;
+    numPointerChanges++;
 
     if (root == x) 
     {
         // Might need to change the root aswell.
         root = y;
+        numPointerChanges++;
     }
 }
 
@@ -140,31 +149,39 @@ void RedBlackTree::leftRotate(RedBlackTreeNode *x)
     RedBlackTreeNode *z = y->leftChild;
 
     y->parent = x->parent; 
+    numPointerChanges++;
     if (x->parent) 
     {
         if (x->parent->leftChild == x) 
         {
             x->parent->leftChild = y;
+            numPointerChanges++;
         } 
         else 
         {
             x->parent->rightChild = y;
+            numPointerChanges++;
         }
     }
 
     x->parent = y;
+    numPointerChanges++;
     y->leftChild = x;
+    numPointerChanges++;
 
     if (z) 
     {
         z->parent = x;
+        numPointerChanges++;
     }
     x->rightChild = z;
+    numPointerChanges++;
 
     if (root == x) 
     {
         // Might need to change the root aswell.
         root = y;
+        numPointerChanges++;
     }
 }
 
@@ -188,8 +205,11 @@ void RedBlackTree::fixTree(RedBlackTreeNode *z)
             {
                 // Case 1 problem
                 z->parent->color = BLACK;
+                numReColorings++;
                 y->color = BLACK;
+                numReColorings++;
                 z->parent->parent->color = RED;
+                numReColorings++;
                 z = z->parent->parent;
             }
             else 
@@ -202,7 +222,9 @@ void RedBlackTree::fixTree(RedBlackTreeNode *z)
                 }
                 // Case 3 problem
                 z->parent->color = BLACK;
+                numReColorings++;
                 z->parent->parent->color = RED;
+                numReColorings++;
                 rightRotate(z->parent->parent);
             }
         }
@@ -216,8 +238,11 @@ void RedBlackTree::fixTree(RedBlackTreeNode *z)
             {
                 // Case 1 problem
                 z->parent->color = BLACK;
+                numReColorings++;
                 y->color = BLACK;
+                numReColorings++;
                 z->parent->parent->color = RED;
+                numReColorings++;
                 z = z->parent->parent;
             }
             else 
@@ -230,13 +255,16 @@ void RedBlackTree::fixTree(RedBlackTreeNode *z)
                 }
                 // Case 3 problem
                 z->parent->color = BLACK;
+                numReColorings++;
                 z->parent->parent->color = RED;
+                numReColorings++;
                 leftRotate(z->parent->parent);
             }
         }
     }
     // Make sure that the root of the tree stays black 
     root->color = BLACK;
+    numReColorings++;
 }
 
 /*
@@ -293,3 +321,30 @@ int RedBlackTree::heightHelper(RedBlackTreeNode *node)
     return 1 + std::max(heightHelper(node->rightChild), heightHelper(node->leftChild));
 }
 
+int RedBlackTree::uniqueItemsInTreeHelper(RedBlackTreeNode *node)
+{
+    if (!node) 
+    {
+        return 0;
+    }
+    return 1 + uniqueItemsInTreeHelper(node->leftChild) + uniqueItemsInTreeHelper(node->rightChild);
+}
+
+int RedBlackTree::uniqueItemsInTree() 
+{
+    return uniqueItemsInTreeHelper(root);
+}
+
+int RedBlackTree::itemsInTreeHelper(RedBlackTreeNode *node)
+{
+    if (!node)
+    {
+        return 0;
+    }
+    return node->weight + itemsInTreeHelper(node->leftChild) + itemsInTreeHelper(node->rightChild);
+}
+
+int RedBlackTree::itemsInTree()
+{
+    return itemsInTreeHelper(root);
+}

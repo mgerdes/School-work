@@ -40,6 +40,10 @@ struct RedBlackTreeNode
 class RedBlackTree 
 {
     private:
+        int numPointerChanges; 
+        int numReColorings;
+        int numComparisons;
+
         // Need to store the root of the tree and the special 'null' node.
         RedBlackTreeNode *root, *null;
 
@@ -57,6 +61,10 @@ class RedBlackTree
 
         // Function to help do an inorder traversal of the tree
         void listHelper(RedBlackTreeNode *node);
+
+        int uniqueItemsInTreeHelper(RedBlackTreeNode *node);
+
+        int itemsInTreeHelper(RedBlackTreeNode *node);
     public:
         RedBlackTree();
 
@@ -67,4 +75,8 @@ class RedBlackTree
 
         // Do an inorder traversal of the tree
         void list();
+
+        int uniqueItemsInTree();
+
+        int itemsInTree();
 };
