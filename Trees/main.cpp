@@ -8,6 +8,7 @@
 #include "BinaryTree.h"
 
 double timeToReadInFile;
+std::string fileName;
 
 /*
  * Read through the whole file to get the time it takes to read it in
@@ -26,7 +27,7 @@ void setTimeToReadInFile() {
         chari[i] = '\0';
     }
 
-    std::ifstream inFile("shakespeare.txt", std::ios::binary);
+    std::ifstream inFile(fileName, std::ios::binary);
     if (inFile.fail())
     {
         std::cout << "Unable to open input file\n\n"
@@ -99,7 +100,7 @@ void analyzeAVLTree() {
         chari[i] = '\0';
     }
 
-    std::ifstream inFile("shakespeare.txt", std::ios::binary);
+    std::ifstream inFile(fileName, std::ios::binary);
     if (inFile.fail())
     {
         std::cout << "Unable to open input file\n\n"
@@ -177,7 +178,7 @@ void analyzeRedBlackTree() {
         chari[i] = '\0';
     }
 
-    std::ifstream inFile("shakespeare.txt", std::ios::binary);
+    std::ifstream inFile(fileName, std::ios::binary);
     if (inFile.fail())
     {
         std::cout << "Unable to open input file\n\n"
@@ -256,7 +257,7 @@ void analyzeBinaryTree() {
         chari[i] = '\0';
     }
 
-    std::ifstream inFile("shakespeare.txt", std::ios::binary);
+    std::ifstream inFile(fileName, std::ios::binary);
     if (inFile.fail())
     {
         std::cout << "Unable to open input file\n\n"
@@ -313,6 +314,9 @@ void analyzeBinaryTree() {
 }
 
 int main() {
+    // Set the filename that should be read in.
+    fileName = "shakespeare.txt";
+
     // First set the time to read in the file.
     setTimeToReadInFile();
 
