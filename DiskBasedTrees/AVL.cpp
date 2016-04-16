@@ -44,6 +44,8 @@ class AVLTree
 
         int heightHelper(int nodeId);
     public:
+        int numFileReads, numFileWrites;
+
         AVLTree();
 
         void insert(std::string data);
@@ -57,6 +59,9 @@ class AVLTree
 
 AVLTree::AVLTree() 
 {
+    numFileReads = 0;
+    numFileWrites = 0;
+
     rootNode = 0;
     numberNodes = 0;
     
@@ -454,15 +459,30 @@ int AVLTree::count(std::string data)
 
 void AVLTree::writeNodeToFile(AVLTreeNode &node) 
 {
+    numFileWrites++;
     outputFile.seekp((node.id - 1) * sizeof(AVLTreeNode));
-	outputFile.write(reinterpret_cast<char*>(&node), sizeof(AVLTreeNode)); 
+	outputFile.write((char*)(&node), sizeof(AVLTreeNode)); 
 	outputFile.flush();
 }
 
 void AVLTree::readNodeFromFile(AVLTreeNode &node, int id) 
 {
+    if (id == node1.id) {
+        node = node1;
+        return;
+    }
+    if (id == node2.id) {
+        node = node2;
+        return;
+    }
+    if (id == node3.id) {
+        node = node3;
+        return;
+    }
+
+    numFileReads++;
 	inputFile.seekg((id - 1) * sizeof(AVLTreeNode));
-	inputFile.read(reinterpret_cast<char*>(&node), sizeof(AVLTreeNode));
+	inputFile.read((char*)(&node), sizeof(AVLTreeNode));
 }
 
 void AVLTree::setUpNewAVLTreeNode(AVLTreeNode &node, std::string data) 
@@ -486,7 +506,9 @@ int main()
         tree.insert(s);
     }
 
-    std::cout << tree.height() << std::endl;
+    std::cout << "Num file reads: " << tree.numFileReads << std::endl;
+    std::cout << "Num file writes: " << tree.numFileWrites << std::endl;
+    std::cout << "Height: " << tree.height() << std::endl;
 
     return 0;
 }
