@@ -9,6 +9,9 @@
 
 #include "AVLTree.h"
 
+/*
+ * Constructor for the AVLTree.
+ */
 AVLTree::AVLTree() 
 {
     // Set rootNode to null.
@@ -26,11 +29,17 @@ AVLTree::AVLTree()
     outputFile.open("tree.bin", std::ios::binary);
 
     // Do some error checking.
-    if (inputFile.fail()) {
+    if (inputFile.fail()) 
+    {
         std::cout << "Problem opening input file\n";
+        char c;
+        std::cin.get(c);
     }
-    if (outputFile.fail()) {
-        std::cout << "Problem openeing output file\n";
+    if (outputFile.fail()) 
+    {
+        std::cout << "Problem opening output file\n";
+        char c;
+        std::cin.get(c);
     }
 }
 

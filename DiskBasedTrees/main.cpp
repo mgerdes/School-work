@@ -1,3 +1,12 @@
+/*
+ * File Name: main.cpp
+ * Name: Michael Gerdes
+ * Date: 4/19/2016
+ * Class: Linear Data Structures
+ *
+ * This file is the main file for the Disk Based Trees
+ */
+
 #include <iostream>
 #include <fstream>
 #include <chrono>
@@ -7,9 +16,15 @@
 #include "AVLTree.h"
 #include "BTree.h"
 
+// Store the name of the file.
 std::string fileName = "shakespeare.txt";
+
+// Store the time to read in the file.
 double timeToReadInFile;
 
+/*
+ * Function to read in the file and set the time it took.
+ */
 void setTimeToReadInFile() {
     std::chrono::time_point<std::chrono::system_clock> startTime, endTime;
     startTime = std::chrono::system_clock::now();
@@ -77,6 +92,9 @@ void setTimeToReadInFile() {
     std::cout << std::endl;
 }
 
+/*
+ * Analyze the given tree by inserting each word into it.
+ */
 void analyzeTree(DiskBasedTree &tree)
 {
     std::chrono::time_point<std::chrono::system_clock> startTime, endTime;

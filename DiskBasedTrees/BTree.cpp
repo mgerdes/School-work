@@ -1,77 +1,105 @@
+/*
+ * File Name: BTree.cpp
+ * Name: Michael Gerdes
+ * Date: 4/19/2016
+ * Class: Linear Data Structures
+ *
+ * This file is the implementation for the Disk Based BTree
+ */
+
 #include "BTree.h"
 
+/*
+ * Constructor for the BTree
+ */
 BTree::BTree() 
 {
+    // Open up the input and output files.
     inputFile.open("tree.bin", std::ios::binary);
     outputFile.open("tree.bin", std::ios::binary);
 
+    // Do some error checking.
     if (inputFile.fail()) 
     {
         std::cout << "Problem opening input file\n";
+        char c;
+        std::cin.get(c);
     }
     if (outputFile.fail()) 
     {
-        std::cout << "Problem openeing output file\n";
+        std::cout << "Problem opening output file\n";
+        char c;
+        std::cin.get(c);
     }
 
+    // Zero out all the statistics.
     numFileWrites = 0;
     numFileReads = 0;
     numNodes = 0;
     numTotalKeys = 0;
     numUniqueKeys = 0;
 
+    // Allocate the rootNode and write it to the file.
     allocateNode(rootNode);
     writeNodeToFile(rootNode);
 }
 
+/*
+ * Helps find the height of the tree.
+ */
 int BTree::heightHelper(int id)
 {
+    // If the node is null then it's height is 0.
     if (id == 0) 
     {
         return 0;
     }
 
-    int largestChildHeight = 0;
-
     BTreeNode node;
     readNodeFromFile(node, id);
 
-    for (int i = 1; i <= node.numKeys + 1; i++) 
-    {
-        int h = heightHelper(node.children[i]);
-        if (h > largestChildHeight)
-        {
-            largestChildHeight = h;
-        }
-    }
-
-    return largestChildHeight + 1;
+    // The height of the tree is now 1 + height(leftMostNode).
+    return 1 + heightHelper(node.children[1]);
 }
 
+/*
+ * Returns the height of the tree.
+ */
 int BTree::height()
 {
+    // Call heightHelper with the rootNode's id.
     return heightHelper(rootNode.id);
 }
 
+/*
+ * Finds the count of a key in the tree.
+ */
 int BTree::count(std::string key)
 {
     int index;
     BTreeNode node;
     
+    // First found the node in the tree.
     findNode(node, index, key, rootNode.id);
 
     if (index != 0) 
     {
+        // We found the node so return its count.
         return node.counts[index];
     }
     else
     {
+        // We could not find the node so return 0.
         return 0;
     }
 }
 
+/*
+ * Function helps to list each key in the tree.
+ */
 void BTree::listHelper(int id) 
 {
+    // If the node is null then return.
     if (id == 0) 
     {
         return;
@@ -82,20 +110,30 @@ void BTree::listHelper(int id)
 
     for (int i = 1; i <= node.numKeys; i++) 
     {
+        // Print each key to the left.
         listHelper(node.children[i]);
+
+        // Print the current key.
         std::cout << node.keys[i] << std::endl;
     }
+
+    // Print each key to the far right.
     listHelper(node.children[node.numKeys + 1]);
 }
 
+/*
+ * Lists each key in the tree.
+ */
 void BTree::list() 
 {
-    if (rootNode.numKeys == 0) {
-        return;
-    }
+    // Simply calls the helper using the root
     listHelper(rootNode.id);
 }
 
+/*
+ * Function inserts the key into a non-full node.
+ * It is the same function from the book.
+ */
 void BTree::insertNonFull(BTreeNode &x, std::string key) 
 {
     int i = x.numKeys;
@@ -140,6 +178,10 @@ void BTree::insertNonFull(BTreeNode &x, std::string key)
     }
 }
 
+/*
+ * Function inserts a key into the tree.
+ * It is the same function from the book.
+ */
 void BTree::insert(std::string key) 
 {
     numTotalKeys++;
@@ -176,6 +218,10 @@ void BTree::insert(std::string key)
     }
 }
 
+/*
+ * Function splits a node in the tree.
+ * It is the same from the book.
+ */
 void BTree::splitChild(BTreeNode &x, int i) 
 {
     BTreeNode z;
@@ -222,6 +268,9 @@ void BTree::splitChild(BTreeNode &x, int i)
     writeNodeToFile(x);
 }
 
+/*
+ * Write a node to the file.
+ */
 void BTree::writeNodeToFile(BTreeNode &node) 
 {
     numFileWrites++;
@@ -230,6 +279,9 @@ void BTree::writeNodeToFile(BTreeNode &node)
 	outputFile.flush();
 }
 
+/*
+ * Allocate a node, and set up all of it's attributes.
+ */
 void BTree::allocateNode(BTreeNode &node) 
 {
     node.id = numNodes + 1;
@@ -243,6 +295,9 @@ void BTree::allocateNode(BTreeNode &node)
     numNodes++;
 }
 
+/*
+ * Given an id, read that node from the file.
+ */
 void BTree::readNodeFromFile(BTreeNode &node, int id) 
 {
     numFileReads++;
@@ -250,6 +305,9 @@ void BTree::readNodeFromFile(BTreeNode &node, int id)
 	inputFile.read((char*)(&node), sizeof(BTreeNode));
 }
 
+/*
+ * Print the results for the tree.
+ */
 void BTree::printResults()
 {
     std::cout << "--- B-Tree Analysis ---\n";
@@ -262,16 +320,25 @@ void BTree::printResults()
     //list();
 }
 
+/*
+ * Finds the node with the key in the tree.
+ * It also gives you the index that the key is at.
+ *
+ * You have to pass in a reference to the node and index.
+ */
 void BTree::findNode(BTreeNode &node, int &index, std::string key, int nodeId)
 {
     if (nodeId == 0) 
     {
+        // Could not find the key.
         index = 0;
         return;
     }
 
     BTreeNode x;
     readNodeFromFile(x, nodeId);
+
+    // Look at each key in the node.
 
     int i = 1;
     while (i <= x.numKeys && key > std::string(x.keys[i]))
@@ -280,12 +347,14 @@ void BTree::findNode(BTreeNode &node, int &index, std::string key, int nodeId)
     }
     if (i <= x.numKeys && key == std::string(x.keys[i]))
     {
+        // Found the node so set the input references.
         index = i;
         node = x;
         return;
     }
     else
     {
+        // Look for the node in the children nodes.
         findNode(node, index, key, x.children[i]);
     }
 }
