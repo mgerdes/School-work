@@ -10,7 +10,7 @@ struct AVLTreeNode
 
     char data[50];
     int count;
-    int balanceFactor;
+    int height;
 
     int parent;
     int leftChild;
@@ -43,6 +43,10 @@ class AVLTree
         void listHelper(int nodeId);
 
         int heightHelper(int nodeId);
+
+        void fixHeight(AVLTreeNode &node);
+
+        int balanceFactor(AVLTreeNode &node);
     public:
         int numFileReads, numFileWrites;
 
@@ -74,6 +78,55 @@ AVLTree::AVLTree()
     if (outputFile.fail()) {
         std::cout << "Problem openeing output file\n";
     }
+}
+
+void AVLTree::fixHeight(AVLTreeNode &node)
+{
+    int leftHeight = 0;
+    if (node.leftChild != 0) 
+    {
+        AVLTreeNode temp;
+        readNodeFromFile(temp, node.leftChild);
+        leftHeight = temp.height;
+    }
+
+    int rightHeight = 0;
+    if (node.rightChild != 0) {
+        AVLTreeNode temp;
+        readNodeFromFile(temp, node.rightChild);
+        rightHeight = temp.height;
+    }
+
+    if (leftHeight > rightHeight)
+    {
+        node.height = leftHeight + 1;
+    }
+    else
+    {
+        node.height = rightHeight + 1;
+    }
+
+    writeNodeToFile(node);
+}
+
+int AVLTree::balanceFactor(AVLTreeNode &node)
+{
+    int leftHeight = 0;
+    if (node.leftChild != 0)
+    {
+        AVLTreeNode temp;
+        readNodeFromFile(temp, node.leftChild);
+        leftHeight = temp.height;
+    }
+
+    int rightHeight = 0;
+    if (node.rightChild != 0) {
+        AVLTreeNode temp;
+        readNodeFromFile(temp, node.rightChild);
+        rightHeight = temp.height;
+    }
+
+    return leftHeight - rightHeight;
 }
 
 
@@ -121,10 +174,8 @@ void AVLTree::rightRotate()
         rootNode = node2.id;
     }
 
-    node1.balanceFactor = 0;
-    node2.balanceFactor = 0;
-    writeNodeToFile(node1);
-    writeNodeToFile(node2);
+    fixHeight(node1);
+    fixHeight(node2);
 }
 
 /*                                      *
@@ -171,10 +222,8 @@ void AVLTree::leftRotate()
         rootNode = node2.id;
     }
 
-    node1.balanceFactor = 0;
-    node2.balanceFactor = 0;
-    writeNodeToFile(node1);
-    writeNodeToFile(node2);
+    fixHeight(node1);
+    fixHeight(node2);
 }
 
 // assumes node1, 
@@ -182,17 +231,9 @@ void AVLTree::fixTree()
 {
     while (node1.id) 
     {
-        if (node1.leftChild == node2.id) 
-        {
-            node1.balanceFactor++;
-        }
-        else 
-        {
-            node1.balanceFactor--;
-        }
-        writeNodeToFile(node1);
+        fixHeight(node1);
 
-        if (abs(node1.balanceFactor) >= 2) 
+        if (abs(balanceFactor(node1)) >= 2) 
         {
             if (node1.leftChild == node2.id && node2.leftChild == node3.id) 
             {
@@ -219,13 +260,11 @@ void AVLTree::fixTree()
                  *         / \             /  \                               *
                  *        B   C           A    B                              *
                  */      
-                AVLTreeNode temp = node1;
-
                 node1 = node2;
                 node2 = node3;
                 leftRotate();
                 
-                node1 = temp;
+                readNodeFromFile(node1, node2.parent);
                 rightRotate();
             } 
             else if (node1.rightChild == node2.id && node2.rightChild == node3.id) 
@@ -252,13 +291,11 @@ void AVLTree::fixTree()
                  *        /  \                 /  \                           *
                  *       B    C               C    D                          *
                  */      
-                AVLTreeNode temp = node1;
-
                 node1 = node2;
                 node2 = node3;
                 rightRotate();
 
-                node1 = temp;
+                readNodeFromFile(node1, node2.parent);
                 leftRotate();
             }
             return;
@@ -310,8 +347,7 @@ void AVLTree::insert(std::string data)
                 node2.parent = node1.id;
                 writeNodeToFile(node2);
                 node1.leftChild = node2.id;
-                node1.balanceFactor++;
-                writeNodeToFile(node1);
+                fixHeight(node1);
 
                 node3 = node2;
                 node2 = node1;
@@ -335,8 +371,7 @@ void AVLTree::insert(std::string data)
                 node2.parent = node1.id;
                 writeNodeToFile(node2);
                 node1.rightChild = node2.id;
-                node1.balanceFactor--;
-                writeNodeToFile(node1);
+                fixHeight(node1);
 
                 node3 = node2;
                 node2 = node1;
@@ -397,7 +432,7 @@ void AVLTree::listHelper(int nodeId)
         listHelper(currentNode.leftChild);
     }
 
-    std::cout << "Data = " << std::string(currentNode.data) << ", Balance Factor = " << currentNode.balanceFactor << std::endl;
+    std::cout << "Data = " << std::string(currentNode.data) << ", Balance Factor = " << balanceFactor(currentNode) << std::endl;
 
     if (currentNode.rightChild) 
     {
@@ -490,7 +525,7 @@ void AVLTree::setUpNewAVLTreeNode(AVLTreeNode &node, std::string data)
     node.id = numberNodes + 1;
     strcpy(node.data, data.c_str());
     node.count = 1;
-    node.balanceFactor = 0;
+    node.height = 0;
     node.parent = 0;
     node.leftChild = 0;
     node.rightChild = 0;
@@ -501,7 +536,7 @@ int main()
 {
     AVLTree tree;
 
-    for (int i = 99999; i >= 10000; i--) {
+    for (int i = 0; i < 999; i++) {
         std::string s = std::to_string(i);
         tree.insert(s);
     }
@@ -509,6 +544,8 @@ int main()
     std::cout << "Num file reads: " << tree.numFileReads << std::endl;
     std::cout << "Num file writes: " << tree.numFileWrites << std::endl;
     std::cout << "Height: " << tree.height() << std::endl;
+
+    tree.list();
 
     return 0;
 }
