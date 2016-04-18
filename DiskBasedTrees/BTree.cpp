@@ -1,122 +1,114 @@
-#include <string.h>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <stdlib.h>
-
-#define TREE_DEGREE 3
-
-struct BTreeNode 
-{
-    int id;
-
-    int numKeys;
-    char keys[2 * TREE_DEGREE][50];
-    int counts[2 * TREE_DEGREE];
-
-    int children[2 * TREE_DEGREE + 1];
-
-    bool isLeaf;
-};
-
-class BTree 
-{
-    private:
-        BTreeNode rootNode;
-
-        int numNodes;
-
-        std::ifstream inputFile;
-        std::ofstream outputFile;
-
-        void splitChild(BTreeNode &node, int i);
-
-        void writeNodeToFile(BTreeNode &node);
-
-        void readNodeFromFile(BTreeNode &node, int id);
-
-        void allocateNode(BTreeNode &node);
-
-        void insertNonFull(BTreeNode &node, std::string key);
-
-        void inOrderHelper(int id);
-    public:
-        int numFileWrites, numFileReads;
-
-        BTree();
-
-        void insert(std::string key);
-
-        void inOrder();
-};
+#include "BTree.h"
 
 BTree::BTree() 
 {
-    inputFile = std::ifstream("tree.bin", std::ios::binary);
-    outputFile = std::ofstream("tree.bin", std::ios::binary);
+    inputFile.open("tree.bin", std::ios::binary);
+    outputFile.open("tree.bin", std::ios::binary);
 
-    if (inputFile.fail()) {
+    if (inputFile.fail()) 
+    {
         std::cout << "Problem opening input file\n";
     }
-    if (outputFile.fail()) {
+    if (outputFile.fail()) 
+    {
         std::cout << "Problem openeing output file\n";
     }
 
     numFileWrites = 0;
     numFileReads = 0;
     numNodes = 0;
+    numKeys = 0;
 
     allocateNode(rootNode);
     writeNodeToFile(rootNode);
 }
 
-void BTree::inOrderHelper(int id) 
+int BTree::heightHelper(int id)
 {
+    if (id == 0) 
+    {
+        return 0;
+    }
+
+    int largestChildHeight = 0;
+
+    BTreeNode node;
+    readNodeFromFile(node, id);
+
+    for (int i = 1; i <= node.numKeys + 1; i++) 
+    {
+        int h = heightHelper(node.children[i]);
+        if (h > largestChildHeight)
+        {
+            largestChildHeight = h;
+        }
+    }
+
+    return largestChildHeight + 1;
+}
+
+int BTree::height()
+{
+    return heightHelper(rootNode.id);
+}
+
+int BTree::count(std::string key)
+{
+    int index;
+    BTreeNode node;
+    
+    findNode(node, index, key, rootNode.id);
+
+    if (index != 0) 
+    {
+        return node.counts[index];
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void BTree::listHelper(int id) 
+{
+    if (id == 0) 
+    {
+        return;
+    }
+
     BTreeNode node;
     readNodeFromFile(node, id);
 
     for (int i = 1; i <= node.numKeys; i++) 
     {
-        if (!node.isLeaf) 
-        {
-            inOrderHelper(node.children[i]);
-        }
-        std::cout << std::string(node.keys[i]) << std::endl;
+        listHelper(node.children[i]);
+        std::cout << node.keys[i] << std::endl;
     }
-    if (!node.isLeaf)
-    {
-        inOrderHelper(node.children[node.numKeys + 1]);
-    }
+    listHelper(node.children[node.numKeys + 1]);
 }
 
-void BTree::inOrder() 
+void BTree::list() 
 {
     if (rootNode.numKeys == 0) {
         return;
     }
-    inOrderHelper(rootNode.id);
+    listHelper(rootNode.id);
 }
 
 void BTree::insertNonFull(BTreeNode &x, std::string key) 
 {
-    for (int i = 1; i <= x.numKeys; i++) {
-        if (key == std::string(x.keys[i]))
-        {
-            x.counts[i]++;
-            return;
-        }
-    }
-
     int i = x.numKeys;
     if (x.isLeaf)
     {
         while (i >= 1 && key < std::string(x.keys[i])) 
         {
             strcpy(x.keys[i+1], x.keys[i]);
+            x.counts[i+1] = x.counts[i];
             i--;
         }
 
         strcpy(x.keys[i+1], key.c_str());
+        x.counts[i+1]++;
         x.numKeys++; 
         writeNodeToFile(x);
     }
@@ -149,6 +141,12 @@ void BTree::insertNonFull(BTreeNode &x, std::string key)
 
 void BTree::insert(std::string key) 
 {
+    if (count(key) != 0) {
+        return;
+    }
+
+    numKeys++;
+
     int rootId = rootNode.id;
     if (rootNode.numKeys == 2 * TREE_DEGREE - 1)
     {
@@ -182,6 +180,7 @@ void BTree::splitChild(BTreeNode &x, int i)
     for (int j = 1; j <= TREE_DEGREE - 1; j++) 
     {
         strcpy(z.keys[j], y.keys[j + TREE_DEGREE]);
+        z.counts[j] = y.counts[j + TREE_DEGREE];
     }
 
     if (!y.isLeaf) 
@@ -202,13 +201,15 @@ void BTree::splitChild(BTreeNode &x, int i)
     for (int j = x.numKeys; j >= i; j--) 
     {
         strcpy(x.keys[j+1], x.keys[j]);
+        x.counts[j+1] = x.counts[j];
     }
     strcpy(x.keys[i], y.keys[TREE_DEGREE]);
+    x.counts[i] = y.counts[TREE_DEGREE];
     x.numKeys++;
 
-    writeNodeToFile(x);
     writeNodeToFile(y);
     writeNodeToFile(z);
+    writeNodeToFile(x);
 }
 
 void BTree::writeNodeToFile(BTreeNode &node) 
@@ -224,9 +225,11 @@ void BTree::allocateNode(BTreeNode &node)
     node.id = numNodes + 1;
     node.numKeys = 0;
     node.isLeaf = true;
-    for (int i = 0; i < TREE_DEGREE; i++) {
-        node.counts[i] = 1;
+    for (int i = 0; i < 2 * TREE_DEGREE; i++) {
+        node.counts[i] = 0;
+        node.children[i] = 0;
     }
+    node.children[2 * TREE_DEGREE] = 0;
     numNodes++;
 }
 
@@ -237,22 +240,41 @@ void BTree::readNodeFromFile(BTreeNode &node, int id)
 	inputFile.read((char*)(&node), sizeof(BTreeNode));
 }
 
-int main() 
+void BTree::printResults()
 {
-    BTree tree;
+    std::cout << "--- B-Tree Analysis ---\n";
+    std::cout << "Num file reads: " << numFileReads << std::endl;
+    std::cout << "Num file writes: " << numFileWrites << std::endl;
+    std::cout << "Height: " << height() << std::endl;
+    std::cout << "Num nodes: " << numNodes << std::endl;
+    std::cout << "Num keys: " << numKeys << std::endl;
+    //list();
+}
 
-    for (int i = 999; i >= 0; i--) {
-        std::string s = std::to_string(i);
-        tree.insert(s);
+void BTree::findNode(BTreeNode &node, int &index, std::string key, int nodeId)
+{
+    if (nodeId == 0) 
+    {
+        index = 0;
+        return;
     }
-    std::string s = std::to_string(9);
-    tree.insert(s);
 
-    std::cout << "Num file reads: " << tree.numFileReads << std::endl;
-    std::cout << "Num file writes: " << tree.numFileWrites << std::endl;
+    BTreeNode x;
+    readNodeFromFile(x, nodeId);
 
-    tree.inOrder();
-    //std::cout << "Height: " << tree.height() << std::endl;
-
-    return 0;
+    int i = 1;
+    while (i <= x.numKeys && key > std::string(x.keys[i]))
+    {
+        i++;
+    }
+    if (i <= x.numKeys && key == std::string(x.keys[i]))
+    {
+        index = i;
+        node = x;
+        return;
+    }
+    else
+    {
+        findNode(node, index, key, x.children[i]);
+    }
 }

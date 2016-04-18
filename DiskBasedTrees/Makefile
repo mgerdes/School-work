@@ -1,3 +1,3 @@
 all:
-	g++ AVL.cpp -std=c++0x
+	g++ main.cpp AVLTree.cpp BTree.cpp -std=c++11
 
