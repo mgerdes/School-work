@@ -1,3 +1,3 @@
 all:
-	g++ BTree.cpp -std=c++0x
+	g++ AVL.cpp -std=c++0x
 

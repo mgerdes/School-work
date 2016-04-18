@@ -536,7 +536,7 @@ int main()
 {
     AVLTree tree;
 
-    for (int i = 0; i < 999; i++) {
+    for (int i = 0; i < 9999; i++) {
         std::string s = std::to_string(i);
         tree.insert(s);
     }
