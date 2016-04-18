@@ -28,7 +28,8 @@ class AVLTree : public DiskBasedTree
         AVLTreeNode node1, node2, node3;
 
         int rootNode;
-        unsigned int numKeys, numNodes, numFileWrites, numFileReads;
+        unsigned int numNodes, numTotalKeys, numUniqueKeys;
+        unsigned int numFileWrites, numFileReads;
 
         void setUpNewAVLTreeNode(AVLTreeNode &node, std::string data);
 

@@ -7,7 +7,7 @@
 #include "AVLTree.h"
 #include "BTree.h"
 
-std::string fileName = "shakespeare.txt";
+std::string fileName = "shakespeare-back.txt";
 double timeToReadInFile;
 
 void setTimeToReadInFile() {
@@ -153,7 +153,7 @@ int main()
 
     setTimeToReadInFile();
 
-    //analyzeTree(avlTree);
-    //std::cout << std::endl;
+    analyzeTree(avlTree);
+    std::cout << std::endl;
     analyzeTree(bTree);
 }

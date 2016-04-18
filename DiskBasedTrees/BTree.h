@@ -6,7 +6,7 @@
 
 #include "DiskBasedTree.h"
 
-#define TREE_DEGREE 3
+#define TREE_DEGREE 12
 
 struct BTreeNode 
 {
@@ -26,7 +26,8 @@ class BTree : public DiskBasedTree
     private:
         BTreeNode rootNode;
 
-        unsigned int numKeys, numNodes, numFileWrites, numFileReads;
+        unsigned int numNodes, numTotalKeys, numUniqueKeys;
+        unsigned int numFileWrites, numFileReads;
 
         std::ifstream inputFile;
         std::ofstream outputFile;

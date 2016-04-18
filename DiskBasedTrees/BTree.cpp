@@ -17,7 +17,8 @@ BTree::BTree()
     numFileWrites = 0;
     numFileReads = 0;
     numNodes = 0;
-    numKeys = 0;
+    numTotalKeys = 0;
+    numUniqueKeys = 0;
 
     allocateNode(rootNode);
     writeNodeToFile(rootNode);
@@ -141,11 +142,20 @@ void BTree::insertNonFull(BTreeNode &x, std::string key)
 
 void BTree::insert(std::string key) 
 {
-    if (count(key) != 0) {
+    numTotalKeys++;
+
+    BTreeNode node;
+    int index;
+
+    findNode(node, index, key, rootNode.id);
+
+    if (index != 0) 
+    {
+        node.counts[index]++;
         return;
     }
 
-    numKeys++;
+    numUniqueKeys++;
 
     int rootId = rootNode.id;
     if (rootNode.numKeys == 2 * TREE_DEGREE - 1)
@@ -243,11 +253,12 @@ void BTree::readNodeFromFile(BTreeNode &node, int id)
 void BTree::printResults()
 {
     std::cout << "--- B-Tree Analysis ---\n";
-    std::cout << "Num file reads: " << numFileReads << std::endl;
-    std::cout << "Num file writes: " << numFileWrites << std::endl;
+    std::cout << "Number of File Reads: " << numFileReads << std::endl;
+    std::cout << "Number of File Writes: " << numFileWrites << std::endl;
     std::cout << "Height: " << height() << std::endl;
-    std::cout << "Num nodes: " << numNodes << std::endl;
-    std::cout << "Num keys: " << numKeys << std::endl;
+    std::cout << "Number of Nodes: " << numNodes << std::endl;
+    std::cout << "Number of Total Keys Inserted: " << numTotalKeys << std::endl;
+    std::cout << "Number of Unique Keys Inserted: " << numUniqueKeys << std::endl;
     //list();
 }
 

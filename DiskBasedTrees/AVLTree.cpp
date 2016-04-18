@@ -5,7 +5,8 @@ AVLTree::AVLTree()
     rootNode = 0;
 
     numNodes = 0;
-    numKeys = 0;
+    numTotalKeys = 0;
+    numUniqueKeys = 0;
     numFileReads = 0;
     numFileWrites = 0;
     
@@ -252,7 +253,8 @@ void AVLTree::fixTree()
 
 void AVLTree::insert(std::string data) 
 {
-    numKeys++;
+    numTotalKeys++;
+    numUniqueKeys++;
 
     if (!rootNode) 
     {
@@ -275,7 +277,7 @@ void AVLTree::insert(std::string data)
         {
             node1.count++;
             writeNodeToFile(node1);
-            numKeys--;
+            numUniqueKeys--;
             return;
         }
         else if (compare < 0) 
@@ -478,10 +480,11 @@ void AVLTree::setUpNewAVLTreeNode(AVLTreeNode &node, std::string data)
 void AVLTree::printResults()
 {
     std::cout << "--- AVL Tree Results ---\n";
-    std::cout << "Num file reads: " << numFileReads << std::endl;
-    std::cout << "Num file writes: " << numFileWrites << std::endl;
+    std::cout << "Number of File Reads: " << numFileReads << std::endl;
+    std::cout << "Number of File Writes: " << numFileWrites << std::endl;
     std::cout << "Height: " << height() << std::endl;
-    std::cout << "Num nodes: " << numNodes << std::endl;
-    std::cout << "Num keys: " << numKeys << std::endl;
+    std::cout << "Number of Nodes: " << numNodes << std::endl;
+    std::cout << "Number of Total Keys Inserted: " << numTotalKeys << std::endl;
+    std::cout << "Number of Unique Keys Inserted: " << numUniqueKeys << std::endl;
     //list();
 }
