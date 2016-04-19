@@ -3,6 +3,8 @@
 
 struct Node
 {
+    int key;
+    Node *predecessor;
     std::string data;
 };
 
@@ -269,6 +271,8 @@ void doKruskals(Graph *g)
         minWeight += e->w;
     }
 
+    printf("Kruskals's Algorithm\n");
+
     for (int i = 0; i < g->numNodes - 1; i++)
     {
         Edge *e = minSpanningTree[i];
@@ -278,24 +282,144 @@ void doKruskals(Graph *g)
     printf("%d\n", minWeight);
 }
 
+class NodePriorityQueue
+{
+    private:
+        int numNodes;
+        Node **nodes;
+    public:
+        NodePriorityQueue(int maxNumNodes);
+
+        ~NodePriorityQueue();
+
+        bool isEmpty();
+
+        void addNode(Node *n);
+
+        Node *extractMin();
+
+        bool contains(Node *n);
+};
+
+NodePriorityQueue::NodePriorityQueue(int maxNumNodes)
+{
+    nodes = new Node*[maxNumNodes];
+    numNodes = 0;
+}
+
+NodePriorityQueue::~NodePriorityQueue() 
+{
+    delete[] nodes;
+}
+
+bool NodePriorityQueue::isEmpty()
+{
+    return numNodes == 0;
+}
+
+void NodePriorityQueue::addNode(Node *n)
+{
+    nodes[numNodes] = n;
+    numNodes++;
+}
+
+Node *NodePriorityQueue::extractMin()
+{
+    Node *minNode = nodes[0];
+    int minNodeIndex = 0;
+    for (int i = 1; i < numNodes; i++) 
+    {
+        Node *n = nodes[i];
+        if (n->key < minNode->key)
+        {
+            minNode = n;
+            minNodeIndex = i;
+        }
+    }
+
+    for (int i = minNodeIndex + 1; i < numNodes; i++)
+    {
+        nodes[i - 1] = nodes[i];
+    }
+
+    numNodes--;
+
+    return minNode;
+}
+
+bool NodePriorityQueue::contains(Node *n)
+{
+    for (int i = 0; i < numNodes; i++)
+    {
+        if (nodes[i] == n)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void doPrims(Graph *g)
 {
+    NodePriorityQueue q(g->numNodes);
 
+    for (int i = 0; i < g->numNodes; i++)
+    {
+        q.addNode(&g->nodes[i]); 
+    }
+
+    g->nodes[0].key = 0;
+
+    while (!q.isEmpty())
+    {
+        Node *u = q.extractMin();
+
+        for (int i = 0; i < g->numEdges; i++)
+        {
+            Node *v = 0;
+            if (g->edges[i].n1 == u)
+            {
+                v = g->edges[i].n2;
+            }
+            if (g->edges[i].n2 == u)
+            {
+                v = g->edges[i].n1;
+            }
+            if (v && q.contains(v) && g->edges[i].w < v->key)
+            {
+                v->predecessor = u;
+                v->key = g->edges[i].w;
+            }
+        }
+    }
+
+    printf("Prim's Algorithm\n");
+
+    int minWeight = 0;
+    for (int i = 1; i < 9; i++)
+    {
+        Node *n1 = &g->nodes[i]; 
+        Node *n2 = n1->predecessor;
+        minWeight += n1->key;
+        printf("%s - %s, %d\n", n1->data.c_str(), n2->data.c_str(), n1->key);
+    }
+
+    printf("%d\n", minWeight);
 }
 
 int main() 
 {
     Graph g(9);
 
-    g.addNode({"A"});
-    g.addNode({"B"});
-    g.addNode({"C"});
-    g.addNode({"D"});
-    g.addNode({"E"});
-    g.addNode({"F"});
-    g.addNode({"G"});
-    g.addNode({"H"});
-    g.addNode({"I"});
+    g.addNode({999999, 0, "A"});
+    g.addNode({999999, 0, "B"});
+    g.addNode({999999, 0, "C"});
+    g.addNode({999999, 0, "D"});
+    g.addNode({999999, 0, "E"});
+    g.addNode({999999, 0, "F"});
+    g.addNode({999999, 0, "G"});
+    g.addNode({999999, 0, "H"});
+    g.addNode({999999, 0, "I"});
     
     g.addEdge({10, &g.nodes[0], &g.nodes[1]});
     g.addEdge({12, &g.nodes[0], &g.nodes[2]});
@@ -313,6 +437,7 @@ int main()
     g.addEdge({11, &g.nodes[7], &g.nodes[8]});
 
     doKruskals(&g);
+    doPrims(&g);
 
     return 0;
 }
