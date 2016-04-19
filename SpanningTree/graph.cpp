@@ -1,9 +1,15 @@
+#include <string>
 #include <stdio.h>
+
+struct Node
+{
+    std::string data;
+};
 
 struct Edge
 {
-    char x, y;
     int w;
+    Node *n1, *n2;
 };
 
 class Graph 
@@ -11,30 +17,41 @@ class Graph
     public:
         int numEdges, numNodes;
         Edge *edges;
+        Node *nodes;
 
         Graph(int numNodes);
 
         ~Graph();
 
         void addEdge(Edge e);
+
+        void addNode(Node n);
 };
 
 Graph::Graph(int numNodes) 
 {
-    this->numNodes = numNodes;
+    this->numNodes = 0;
+    this->numEdges = 0;
     edges = new Edge[numNodes * numNodes];
-    numEdges = 0;
+    nodes = new Node[numNodes];
 }
 
 Graph::~Graph()
 {
     delete[] edges;
+    delete[] nodes;
 }
 
 void Graph::addEdge(Edge e)
 {
     edges[numEdges] = e;
     numEdges++;
+}
+
+void Graph::addNode(Node n)
+{
+    nodes[numNodes] = n;
+    numNodes++;
 }
 
 class PriorityQueue
@@ -102,7 +119,7 @@ Edge *PriorityQueue::extractMin()
 
 struct Set
 {
-    char x;   
+    Node *n;
     Set *rest;
 };
 
@@ -113,9 +130,9 @@ class Sets
 
         Set **sets;
 
-        bool isNodeInSet(char x, Set *s);
+        bool isNodeInSet(Node *n, Set *s);
 
-        Set *findSetWithNode(char x, int &i);
+        Set *findSetWithNode(Node *n, int &i);
 
         void appendToSet(Set *s1, Set *s2);
 
@@ -123,11 +140,11 @@ class Sets
     public:
         Sets(int numNodes);
 
-        void addNode(char x);
+        void addNode(Node *n);
 
-        void combineNodes(char x, char y);
+        void combineNodes(Node *n1, Node *n2);
 
-        bool areNodesInSameSet(char x, char y);
+        bool areNodesInSameSet(Node *n1, Node *n2);
 };
 
 Sets::Sets(int numNodes)
@@ -136,11 +153,11 @@ Sets::Sets(int numNodes)
     numSets = 0;
 }
 
-Set *Sets::findSetWithNode(char x, int &i)
+Set *Sets::findSetWithNode(Node *n, int &i)
 {
     for (int j = 0; j < numSets; j++)
     {
-        if (isNodeInSet(x, sets[j]))
+        if (isNodeInSet(n, sets[j]))
         {
             i = j;
             break;
@@ -149,11 +166,11 @@ Set *Sets::findSetWithNode(char x, int &i)
     return sets[i];
 }
 
-bool Sets::isNodeInSet(char x, Set *s)
+bool Sets::isNodeInSet(Node *n, Set *s)
 {
     while (s)
     {
-        if (s->x == x)
+        if (s->n->data == n->data)
         {
             return true;
         }
@@ -162,10 +179,10 @@ bool Sets::isNodeInSet(char x, Set *s)
     return false;
 }
 
-void Sets::addNode(char x)
+void Sets::addNode(Node *n)
 {
     sets[numSets] = new Set();
-    sets[numSets]->x = x;
+    sets[numSets]->n = n;
     sets[numSets]->rest = 0;
     numSets++;
 }
@@ -198,23 +215,23 @@ void Sets::removeSet(Set *s)
     }
 }
 
-void Sets::combineNodes(char x, char y)
+void Sets::combineNodes(Node *n1, Node *n2)
 {
-    int setWithX, setWithY;
+    int setWithN1, setWithN2;
 
-    Set *s1 = findSetWithNode(x, setWithX);
-    Set *s2 = findSetWithNode(y, setWithY);
+    Set *s1 = findSetWithNode(n1, setWithN1);
+    Set *s2 = findSetWithNode(n2, setWithN2);
 
     appendToSet(s1, s2);
 
     removeSet(s2);
 }
 
-bool Sets::areNodesInSameSet(char x, char y)
+bool Sets::areNodesInSameSet(Node *n1, Node *n2)
 {
     for (int i = 0; i < numSets; i++)
     {
-        if (isNodeInSet(x, sets[i]) && isNodeInSet(y, sets[i]))
+        if (isNodeInSet(n1, sets[i]) && isNodeInSet(n2, sets[i]))
         {
             return true;
         }
@@ -234,7 +251,7 @@ void doKruskals(Graph *g)
     Sets s(g->numNodes);
     for (int i = 0; i < g->numNodes; i++)
     {
-        s.addNode('A' + i);
+        s.addNode(&g->nodes[i]);
     }
 
     Edge *minSpanningTree[g->numNodes - 1];
@@ -243,11 +260,11 @@ void doKruskals(Graph *g)
     for (int i = 0; i < g->numNodes - 1; i++)
     {
         Edge *e = q.extractMin();
-        while (s.areNodesInSameSet(e->x, e->y))
+        while (s.areNodesInSameSet(e->n1, e->n2))
         {
             e = q.extractMin();
         }
-        s.combineNodes(e->x, e->y);
+        s.combineNodes(e->n1, e->n2);
         minSpanningTree[i] = e;
         minWeight += e->w;
     }
@@ -255,7 +272,7 @@ void doKruskals(Graph *g)
     for (int i = 0; i < g->numNodes - 1; i++)
     {
         Edge *e = minSpanningTree[i];
-        printf("%c - %c, %d\n", e->x, e->y, e->w);
+        printf("%s - %s, %d\n", e->n1->data.c_str(), e->n2->data.c_str(), e->w);
     }
 
     printf("%d\n", minWeight);
@@ -263,27 +280,37 @@ void doKruskals(Graph *g)
 
 void doPrims(Graph *g)
 {
-    
+
 }
 
 int main() 
 {
     Graph g(9);
+
+    g.addNode({"A"});
+    g.addNode({"B"});
+    g.addNode({"C"});
+    g.addNode({"D"});
+    g.addNode({"E"});
+    g.addNode({"F"});
+    g.addNode({"G"});
+    g.addNode({"H"});
+    g.addNode({"I"});
     
-    g.addEdge({'A', 'B', 10});
-    g.addEdge({'A', 'C', 12});
-    g.addEdge({'B', 'C', 9});
-    g.addEdge({'B', 'D', 8});
-    g.addEdge({'C', 'E', 3});
-    g.addEdge({'C', 'F', 1});
-    g.addEdge({'D', 'E', 7});
-    g.addEdge({'D', 'G', 8});
-    g.addEdge({'D', 'H', 5});
-    g.addEdge({'E', 'F', 3});
-    g.addEdge({'F', 'H', 6});
-    g.addEdge({'G', 'H', 9});
-    g.addEdge({'G', 'I', 2});
-    g.addEdge({'H', 'I', 11});
+    g.addEdge({10, &g.nodes[0], &g.nodes[1]});
+    g.addEdge({12, &g.nodes[0], &g.nodes[2]});
+    g.addEdge({9, &g.nodes[1], &g.nodes[2]});
+    g.addEdge({8, &g.nodes[1], &g.nodes[3]});
+    g.addEdge({3, &g.nodes[2], &g.nodes[4]});
+    g.addEdge({1, &g.nodes[2], &g.nodes[5]});
+    g.addEdge({7, &g.nodes[3], &g.nodes[4]});
+    g.addEdge({8, &g.nodes[3], &g.nodes[6]});
+    g.addEdge({5, &g.nodes[3], &g.nodes[7]});
+    g.addEdge({3, &g.nodes[4], &g.nodes[5]});
+    g.addEdge({6, &g.nodes[5], &g.nodes[7]});
+    g.addEdge({9, &g.nodes[6], &g.nodes[7]});
+    g.addEdge({2, &g.nodes[6], &g.nodes[8]});
+    g.addEdge({11, &g.nodes[7], &g.nodes[8]});
 
     doKruskals(&g);
 
