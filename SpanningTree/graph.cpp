@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include <stdio.h>
 
 struct Node
@@ -28,6 +29,8 @@ class Graph
         void addEdge(Edge e);
 
         void addNode(Node n);
+
+        Edge *getEdge(Node *n1, Node *n2);
 };
 
 Graph::Graph(int numNodes) 
@@ -42,6 +45,19 @@ Graph::~Graph()
 {
     delete[] edges;
     delete[] nodes;
+}
+
+Edge *Graph::getEdge(Node *n1, Node *n2)
+{
+    for (int i = 0; i < numEdges; i++)
+    {
+        if (edges[i].n1 == n1 && edges[i].n2 == n2
+                || edges[i].n1 == n2 && edges[i].n2 == n1)
+        {
+            return &edges[i];
+        }
+    }
+    return 0;
 }
 
 void Graph::addEdge(Edge e)
@@ -241,6 +257,37 @@ bool Sets::areNodesInSameSet(Node *n1, Node *n2)
     return false;
 }
 
+void sortEdges(Edge **edges, int numEdges)
+{
+    for (int i = 0; i < numEdges; i++)
+    {
+        int k = i;
+        for (int j = i; j < numEdges; j++)
+        {
+            if (edges[j]->n1->data > edges[j]->n2->data)
+            {
+                std::string temp = edges[j]->n1->data;
+                edges[j]->n1->data = edges[j]->n2->data;
+                edges[j]->n2->data = temp;
+            }
+            if (edges[j]->n1->data < edges[k]->n1->data)
+            {
+                k = j;
+            }
+            else if (edges[j]->n1->data == edges[k]->n1->data)
+            {
+                if (edges[j]->n2->data < edges[k]->n2->data)
+                {
+                    k = j;
+                }
+            }
+        }
+        Edge *temp = edges[i];
+        edges[i] = edges[k];
+        edges[k] = temp;
+    }
+}
+
 void doKruskals(Graph *g)
 {
     PriorityQueue q(g->numEdges);
@@ -258,7 +305,6 @@ void doKruskals(Graph *g)
 
     Edge *minSpanningTree[g->numNodes - 1];
 
-    int minWeight = 0;
     for (int i = 0; i < g->numNodes - 1; i++)
     {
         Edge *e = q.extractMin();
@@ -268,14 +314,17 @@ void doKruskals(Graph *g)
         }
         s.combineNodes(e->n1, e->n2);
         minSpanningTree[i] = e;
-        minWeight += e->w;
     }
+
+    sortEdges(minSpanningTree, g->numNodes - 1);
 
     printf("Kruskals's Algorithm\n");
 
+    int minWeight = 0;
     for (int i = 0; i < g->numNodes - 1; i++)
     {
         Edge *e = minSpanningTree[i];
+        minWeight += e->w;
         printf("%s - %s, %d\n", e->n1->data.c_str(), e->n2->data.c_str(), e->w);
     }
 
@@ -393,15 +442,25 @@ void doPrims(Graph *g)
         }
     }
 
-    printf("Prim's Algorithm\n");
+    Edge *minSpanningTree[g->numNodes - 1];
 
-    int minWeight = 0;
     for (int i = 1; i < 9; i++)
     {
         Node *n1 = &g->nodes[i]; 
         Node *n2 = n1->predecessor;
-        minWeight += n1->key;
-        printf("%s - %s, %d\n", n1->data.c_str(), n2->data.c_str(), n1->key);
+        minSpanningTree[i - 1] = g->getEdge(n1, n2);
+    }
+
+    sortEdges(minSpanningTree, g->numNodes - 1);
+
+    printf("Prim's Algorithm\n");
+
+    int minWeight = 0;
+    for (int i = 0; i < g->numNodes - 1; i++)
+    {
+        Edge *e = minSpanningTree[i];
+        minWeight += e->w;
+        printf("%s - %s, %d\n", e->n1->data.c_str(), e->n2->data.c_str(), e->w);
     }
 
     printf("%d\n", minWeight);
@@ -409,32 +468,32 @@ void doPrims(Graph *g)
 
 int main() 
 {
-    Graph g(9);
+    int n;
+    std::cin >> n;
 
-    g.addNode({999999, 0, "A"});
-    g.addNode({999999, 0, "B"});
-    g.addNode({999999, 0, "C"});
-    g.addNode({999999, 0, "D"});
-    g.addNode({999999, 0, "E"});
-    g.addNode({999999, 0, "F"});
-    g.addNode({999999, 0, "G"});
-    g.addNode({999999, 0, "H"});
-    g.addNode({999999, 0, "I"});
-    
-    g.addEdge({10, &g.nodes[0], &g.nodes[1]});
-    g.addEdge({12, &g.nodes[0], &g.nodes[2]});
-    g.addEdge({9, &g.nodes[1], &g.nodes[2]});
-    g.addEdge({8, &g.nodes[1], &g.nodes[3]});
-    g.addEdge({3, &g.nodes[2], &g.nodes[4]});
-    g.addEdge({1, &g.nodes[2], &g.nodes[5]});
-    g.addEdge({7, &g.nodes[3], &g.nodes[4]});
-    g.addEdge({8, &g.nodes[3], &g.nodes[6]});
-    g.addEdge({5, &g.nodes[3], &g.nodes[7]});
-    g.addEdge({3, &g.nodes[4], &g.nodes[5]});
-    g.addEdge({6, &g.nodes[5], &g.nodes[7]});
-    g.addEdge({9, &g.nodes[6], &g.nodes[7]});
-    g.addEdge({2, &g.nodes[6], &g.nodes[8]});
-    g.addEdge({11, &g.nodes[7], &g.nodes[8]});
+    Graph g(n);
+
+    for (int i = 0; i < n; i++)
+    {
+        std::string data;
+        std::cin >> data;
+
+        g.addNode({999999, 0, data});
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            int weight;
+            std::cin >> weight;
+
+            if (weight != -1)
+            {
+                g.addEdge({weight, &g.nodes[i], &g.nodes[j]});
+            }
+        }
+    }
 
     doKruskals(&g);
     doPrims(&g);
