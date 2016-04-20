@@ -15,9 +15,9 @@ void sortEdgesByPath(Edge **edges, int numEdges)
         {
             if (edges[j]->n1->data > edges[j]->n2->data)
             {
-                std::string temp = edges[j]->n1->data;
-                edges[j]->n1->data = edges[j]->n2->data;
-                edges[j]->n2->data = temp;
+                Node *temp = edges[j]->n1;
+                edges[j]->n1 = edges[j]->n2;
+                edges[j]->n2 = temp;
             }
             if (edges[j]->n1->data < edges[k]->n1->data)
             {
@@ -75,6 +75,7 @@ void doKruskals(Graph *g)
 
     printf("%d\n", minWeight);
 }
+
 void doPrims(Graph *g)
 {
     PriorityQueue q(g->numNodes);
