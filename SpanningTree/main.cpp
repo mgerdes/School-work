@@ -37,6 +37,21 @@ void sortEdgesByPath(Edge **edges, int numEdges)
     }
 }
 
+void printMinSpanningTree(Edge **minSpanningTree, int numEdges)
+{
+    sortEdgesByPath(minSpanningTree, numEdges);
+
+    int minWeight = 0;
+    for (int i = 0; i < numEdges; i++)
+    {
+        Edge *e = minSpanningTree[i];
+        minWeight += e->w;
+        printf("%s - %s, %d\n", e->n1->data.c_str(), e->n2->data.c_str(), e->w);
+    }
+
+    printf("%d\n", minWeight);
+}
+
 void doKruskals(Graph *g)
 {
     g->sortEdgesByWeight();
@@ -61,19 +76,7 @@ void doKruskals(Graph *g)
         minSpanningTree[i] = e;
     }
 
-    sortEdgesByPath(minSpanningTree, g->numNodes - 1);
-
-    printf("Kruskals's Algorithm\n");
-
-    int minWeight = 0;
-    for (int i = 0; i < g->numNodes - 1; i++)
-    {
-        Edge *e = minSpanningTree[i];
-        minWeight += e->w;
-        printf("%s - %s, %d\n", e->n1->data.c_str(), e->n2->data.c_str(), e->w);
-    }
-
-    printf("%d\n", minWeight);
+    printMinSpanningTree(minSpanningTree, g->numNodes - 1);
 }
 
 void doPrims(Graph *g)
@@ -119,19 +122,7 @@ void doPrims(Graph *g)
         minSpanningTree[i - 1] = g->getEdge(n1, n2);
     }
 
-    sortEdgesByPath(minSpanningTree, g->numNodes - 1);
-
-    printf("Prim's Algorithm\n");
-
-    int minWeight = 0;
-    for (int i = 0; i < g->numNodes - 1; i++)
-    {
-        Edge *e = minSpanningTree[i];
-        minWeight += e->w;
-        printf("%s - %s, %d\n", e->n1->data.c_str(), e->n2->data.c_str(), e->w);
-    }
-
-    printf("%d\n", minWeight);
+    printMinSpanningTree(minSpanningTree, g->numNodes - 1);
 }
 
 int main() 
@@ -165,7 +156,10 @@ int main()
         }
     }
 
+    printf("Kruskal's Algorithm\n");
     doKruskals(&g);
+
+    printf("Prim's Algorithm\n");
     doPrims(&g);
 
     return 0;
