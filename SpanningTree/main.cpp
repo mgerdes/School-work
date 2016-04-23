@@ -46,10 +46,15 @@ void printMinSpanningTree(Edge **minSpanningTree, int numEdges)
     {
         Edge *e = minSpanningTree[i];
         minWeight += e->w;
-        printf("%s - %s, %d\n", e->n1->data.c_str(), e->n2->data.c_str(), e->w);
     }
 
     printf("%d\n", minWeight);
+
+    for (int i = 0; i < numEdges; i++)
+    {
+        Edge *e = minSpanningTree[i];
+        printf("%s-%s: %d\n", e->n1->data.c_str(), e->n2->data.c_str(), e->w);
+    }
 }
 
 void doKruskals(Graph *g)
@@ -149,7 +154,7 @@ int main()
 
             if (j >= i) continue;
 
-            if (weight != -1)
+            if (weight != 0)
             {
                 g.addEdge({weight, &g.nodes[i], &g.nodes[j]});
             }
@@ -158,6 +163,8 @@ int main()
 
     printf("Kruskal's Algorithm\n");
     doKruskals(&g);
+
+    printf("\n");
 
     printf("Prim's Algorithm\n");
     doPrims(&g);
